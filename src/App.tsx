@@ -97,7 +97,8 @@ const App: React.FC = () => {
             {
               path: "single-product/:id",
               element: <SignleProduct />,
-            }
+            },
+
           ]
         },
         {
@@ -108,6 +109,10 @@ const App: React.FC = () => {
         {
           path: "signup",
           element: <SignUp />,
+        },
+        {
+          path: "forgot-password",
+          element: <ForgotPassword />,
         },
       ]
       break;

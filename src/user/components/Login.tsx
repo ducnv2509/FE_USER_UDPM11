@@ -60,7 +60,7 @@ function Login() {
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="#">Nhập mật khẩu</label>
-                                        <a className="float-right" href="">Quên mật khẩu?</a>
+                                        <a className="float-right" href="/forgot-password">Quên mật khẩu?</a>
                                         <input type="password" className="form-control" placeholder="Enter Password" {...register('password')} required />
                                     </div>
                                     {loginError && <p className="text-danger my-4">{loginError}</p>}
