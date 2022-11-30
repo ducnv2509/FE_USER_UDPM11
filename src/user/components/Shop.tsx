@@ -90,9 +90,11 @@ function Shop() {
                                             <div className="product-wrap">
                                                 <Link to={{ pathname: `/single-product/${p.id}` }}>
                                                 <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
+                                                {/* <a href={`/single-product/${p.id}`}> */}
+                                                    <img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" />
+                                                    {/* </a> */}
                                                 </Link>
                                                   {/* <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" /></a> */}
-                                                <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" /></a>
                                             </div>
 
                                             <span className="onsale">Sale</span>
