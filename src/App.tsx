@@ -24,7 +24,7 @@ const App: React.FC = () => {
   //     })
   // );
   const role = useAuthStore((state) => state.role)
-  let routes:any;
+  let routes: any;
   console.log(role);
   switch (role) {
     case 'user':
@@ -79,9 +79,37 @@ const App: React.FC = () => {
     case 'anonymous':
       routes = [
         {
-          path: "/login",
+          path: "/",
+          element: <HomePageUser />,
+          children: [
+            {
+              path: "/",
+              element: <Home />,
+            },
+            {
+              path: "home-user",
+              element: <Home />,
+            },
+            {
+              path: "shop",
+              element: <Shop />,
+            },
+            {
+              path: "single-product/:id",
+              element: <SignleProduct />,
+            }
+          ]
+        },
+        {
+          path: "login",
           element: <Login />,
-        }]
+
+        },
+        {
+          path: "signup",
+          element: <SignUp />,
+        },
+      ]
       break;
   }
   return useRoutes(routes)

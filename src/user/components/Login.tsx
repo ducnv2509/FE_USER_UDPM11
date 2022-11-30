@@ -51,7 +51,7 @@ function Login() {
                             <div className="login-form border p-5">
                                 <div className="text-center heading">
                                     <h2 className="mb-2">Đăng nhập</h2>
-                                    <p className="lead">Không có tài khoản? <a href="#">Tạo một tài khoản miễn phí</a></p>
+                                    <p className="lead">Không có tài khoản? <a href="/signup">Tạo một tài khoản miễn phí</a></p>
                                 </div>
                                 <form onSubmit={handleSubmit(handleFormSubmit)}>
                                     <div className="form-group mb-4">

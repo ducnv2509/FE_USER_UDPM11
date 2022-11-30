@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getDetailProduct } from "../service/HomePage";
 import { addToCart, getProductOption } from "../service/SignleProduct";
 import { IInfo } from "../type/HomePage";
@@ -50,9 +50,11 @@ function SingleProduct() {
     const defaultOption2 = infos.option2
     const defaultOption3 = infos.option3
 
+    const role = useAuthStore((state) => state.role)
 
-  
+
     useEffect(() => { onChangeOptions() }, [op1, op2, op3])
+    let navigate = useNavigate()
 
     const onChangeOptions = () =>
     (
@@ -71,13 +73,17 @@ function SingleProduct() {
             Toast.fire({
                 icon: 'success',
                 title: 'Thêm vào giỏ thành công '
-              })
+            })
         }, (err) => {
             console.log(err)
-            Toast.fire({
-                icon: 'success',
-                title: 'Thêm vào giỏ thất bại'
-              })
+            if (role == 'anonymous') {
+                navigate('/login')
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Thêm vào giỏ thất bại'
+                })
+            }
         })
     }
     return (
@@ -156,7 +162,7 @@ function SingleProduct() {
                                         onChange={(e: any) => {
                                             setQuantityBuy(e.target.value)
                                         }}
-                                        max={infos.quantity} name="quantity" size={4} value={quantityBuy}/>
+                                        max={infos.quantity} name="quantity" size={4} value={quantityBuy} />
                                     <button className="btn btn-main btn-small"
                                         onClick={() => {
                                             addToCartCustomer()
@@ -252,7 +258,7 @@ function SingleProduct() {
                                                     minWidth: 60,
                                                 }}
                                             >
-                                                <Radio id={value} value={value}  />
+                                                <Radio id={value} value={value} />
                                                 <FormLabel htmlFor={value}>{value}</FormLabel>
                                             </Sheet>
                                         ))}
