@@ -12,7 +12,7 @@ import { useAuthStore } from "../../hooks/zustand/auth";
 import Swal from "sweetalert2";
 function SingleProduct() {
     const accessToken = useAuthStore((e) => e.accessToken)
-    let nf = new Intl.NumberFormat();
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const { id } = useParams();
     const [infos, setInfos] = useState({} as IInfo);
     const [option1, setOption1] = useState([]);
@@ -80,11 +80,11 @@ function SingleProduct() {
             console.log(err)
             Toast.fire({
                 icon: 'error',
-                title: 'Thêm vào giỏ thất bại'
+                title: err.response.data.description
             })
         })
     }
-    const checkQuantity=(quantity:any,quantityBuy:any)=>{return Number(quantityBuy)>quantity}
+    const checkQuantity = (quantity: any, quantityBuy: any) => { return Number(quantityBuy) > quantity }
     return (
         <div className="single-product-container">
             <section className="page-header">
@@ -148,13 +148,13 @@ function SingleProduct() {
 
                                 <hr />
 
-                                <h3 className="product-price">{nf.format(infos.price)} vnd<del>$119.90</del></h3>
+                                <h3 className="product-price">{new Intl.NumberFormat('vi-VN', config).format(infos.price)}vnd
+                                {/* <del>$119.90</del> */}
+                                </h3>
 
                                 <p className="product-description my-4 ">
                                     Điều rất quan trọng đối với khách hàng là phải chú ý đến quá trình adipiscing. Người ta cho rằng, bản thân lao động là do có người bỏ mặc cho đau đớn, hưởng lợi. Tất cả các kết quả hạnh phúc của chúng tôi, kết quả của họ? Nó sẽ là hậu quả của việc từ chối chính lời nói.
                                 </p>
-
-
 
 
                                 <div className="color-swatches mt-4 d-flex align-items-center">
@@ -305,19 +305,19 @@ function SingleProduct() {
 
                                                 onChange={(e: any) => {
                                                     setQuantityBuy(e.target.value)
-                                                    if(checkQuantity(infos.quantity,e.target.value)){
+                                                    if (checkQuantity(infos.quantity, e.target.value)) {
                                                         Toast.fire({
                                                             icon: 'error',
                                                             title: 'Số lượng trong kho không đủ'
                                                         })
-                                                    setQuantityBuy(infos.quantity)
+                                                        setQuantityBuy(infos.quantity)
                                                     }
-                                                    if(e.target.value<1){
-                                                            Toast.fire({
-                                                                icon: 'error',
-                                                                title: 'Số lượng tối thiểu là 1'
-                                                            })
-                                                            setQuantityBuy(1)
+                                                    if (e.target.value < 1) {
+                                                        Toast.fire({
+                                                            icon: 'error',
+                                                            title: 'Số lượng tối thiểu là 1'
+                                                        })
+                                                        setQuantityBuy(1)
                                                     }
                                                 }}
                                                 min='1' max={infos.quantity} name="quantity" size={4} value={quantityBuy} />

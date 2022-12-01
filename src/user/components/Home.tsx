@@ -1,6 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getAllProduct } from "../service/HomePage";
+import { IHomePage } from "../type/HomePage";
+import { Pagination } from "antd";
 
 function Home() {
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
+    const [products, setProducts] = useState([{} as IHomePage]);
+    const [page, setPage] = useState({ fist: 0, last: 10 });
+    useEffect(() => {
+        document.title = "Home Page"
+        console.log("adadasd");
+
+        getAllProduct().then((r) => {
+            setProducts(r.data);
+            console.log(r.data.reverse());
+        });
+    }, []);
+    const handleChange = (value: any) => {
+        if (value <= 1) {
+            setPage({
+                fist: 0,
+                last: 9
+            });
+        } else if (value * 10 > products.length) {
+            setPage({
+                fist: (value * 10) - 10,
+                last: products.length
+            });
+        } else {
+            setPage({
+                fist: (value * 10) - 10,
+                last: value * 10
+            });
+        }
+    };
     return (
         <div className="home-container">
             <div className="main-slider slider slick-initialized slick-slider">
@@ -67,176 +101,44 @@ function Home() {
 
 
                     <div className="row">
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5" >
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/322.jpg" alt="product-img" /></a>
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/444.jpg" alt="product-img" /></a>
-                                </div>
+                        <>
+                            {products && products.length > 0 &&
+                                products.slice(page.fist, page.last).map(p => {
+                                    return (
 
-                                <span className="onsale">Sale</span>
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
+                                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5" >
+                                            <div className="product">
+                                                <div className="product-wrap" >
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
+                                                        <img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" />
+                                                    </Link>
+                                                </div>
 
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Hoa Kirby</a></h2>
-                                    <span className="price">
-                                        $329.10
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                                                {/* <span className="onsale">Sale</span> */}
+                                                <div className="product-hover-overlay">
+                                                    <a ><i className="tf-ion-android-cart"></i></a>
+                                                    <a ><i className="tf-ion-ios-heart"></i></a>
+                                                </div>
 
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5">
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/111.jpg" alt="product-img" /></a>
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/444.jpg" alt="product-img" /></a>
-                                </div>
+                                                <div className="product-info">
+                                                    <h2 className="product-title h5 mb-0"><a href="!#">{p.name}</a></h2>
+                                                    <span className="price">
+                                                        {new Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
 
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Áo len đan hở</a></h2>
-                                    <span className="price">
-                                        $29.10
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5" >
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/222.jpg" alt="product-img" /></a>
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/322.jpg" alt="product-img" /></a>
-                                </div>
-
-                                <span className="onsale">Sale</span>
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Hợp thời trang chính thức</a></h2>
-                                    <span className="price">
-                                        $350.00 – $355.00
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5">
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/322.jpg" alt="product-img" /></a>
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/111.jpg" alt="product-img" /></a>
-                                </div>
-
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Đuôi ngắn</a></h2>
-                                    <span className="price">
-                                        $249
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5">
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/444.jpg" alt="product-img" /></a>
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/222.jpg" alt="product-img" /></a>
-                                </div>
-
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Đầm tay</a></h2>
-                                    <span className="price">
-                                        $59.10
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5" >
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/322.jpg" alt="product-img" /></a>
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/222.jpg" alt="product-img" /></a>
-                                </div>
-
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Ăn mặc thời trang</a></h2>
-                                    <span className="price">
-                                        $99.00
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5 " >
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/111.jpg" alt="product-img" /></a>
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/444.jpg" alt="product-img" /></a>
-                                </div>
-
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Bộ body</a></h2>
-                                    <span className="price">
-                                        $329.10
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-12 col-md-6 col-sm-6 mb-5 " >
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/222.jpg" alt="product-img" /></a>
-                                    <a href="!#"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/322.jpg" alt="product-img" /></a>
-                                </div>
-
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
-
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="!#">Áo sơ mi vải lanh</a></h2>
-                                    <span className="price">
-                                        <del>60<pre wp-pre-tag-3=""></pre></del>
-                                        $50.10
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                                })}
+                            <Pagination
+                                defaultCurrent={1}
+                                defaultPageSize={10}
+                                onChange={handleChange}
+                                total={products.length}
+                            />
+                        </>
                     </div>
                 </div>
             </section>
@@ -315,52 +217,22 @@ function Home() {
                         </div>
                         <div className="col-lg-4 col-sm-6 col-md-6">
                             <div className="widget-featured-entries mt-5 mt-lg-0">
-                                <h4 className="mb-4 pb-3">New Arrivals</h4>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="/product-single">
-                                        <img src="assets/images/p-7.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Keds - Kickstart Pom Pom</a></h6>
-                                        <p className="featured-entry-meta">$42.99</p>
-                                    </div>
-                                </div>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-8.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Nike - Brasilia Medium Backpack</a></h6>
-                                        <p className="featured-entry-meta">$27.99</p>
-                                    </div>
-                                </div>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-1.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Guess - GU7295</a></h6>
-                                        <p>$38.00</p>
-                                    </div>
-                                </div>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-2.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Adidas Originals Cap</a></h6>
-                                        <p className="featured-entry-meta">$35.00</p>
-                                    </div>
-                                </div>
-                                <div className="media">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-4.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Big Star Flip Tops</a></h6>
-                                        <p className="featured-entry-meta">$10.60</p>
-                                    </div>
-                                </div>
+                                <h4 className="mb-4 pb-3">Sản phẩm mới</h4>
+                                {products.slice(0, 5).map(p => {
+                                    return (
+                                        <div className="media mb-3">
+                                            <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                <img src={p.image} alt="Product thumb" width="64" className="img-fluid mr-3" />
+                                            </Link>
+                                            <div className="media-body">
+                                                <h6 className="featured-entry-title mb-0"><a href="!#">{p.name}</a></h6>
+                                                <p className="featured-entry-meta">{p.wholesale_price}</p>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+
+
                             </div>
                         </div>
                     </div>

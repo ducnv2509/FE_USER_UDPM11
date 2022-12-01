@@ -2,16 +2,16 @@ import "jquery/dist/jquery.slim.min.js";
 import "popper.js/dist/umd/popper.min.js";
 import "bootstrap/dist/js/bootstrap.min.js";
 import { Link, useNavigate } from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../../hooks/zustand/auth";
-import {ICartItem} from "../type/CartItem";
-import {showCart} from "../service/SignleProduct";
+import { ICartItem } from "../type/CartItem";
+import { showCart } from "../service/SignleProduct";
 
 const Header: React.FC = () => {
     let navigate = useNavigate()
     const resetAuth = useAuthStore((state) => state.resetAuth)
     const name = useAuthStore((state) => state.name)
-    function onLogout () {
+    function onLogout() {
         resetAuth()
         navigate('/login')
     }
@@ -28,9 +28,9 @@ const Header: React.FC = () => {
         localStorage.removeItem('test1')
         showCart(Number(idUser), accessToken).then((response) => {
 
-                console.log(response.data)
-                setCartItems(response.data)
-            },
+            console.log(response.data)
+            setCartItems(response.data)
+        },
             (err) => {
                 console.log('OUT', err);
             });
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
                             <a className="nav-link" href="!#">Giới thiệu</a>
                         </li>
 
-                        <li className="nav-item dropdown dropdown-slide">
+                        {/* <li className="nav-item dropdown dropdown-slide">
                             <a className="nav-link dropdown-toggle" href="!#" id="navbarDropdown4" role="button" data-delay="350"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Các trang.
@@ -74,16 +74,16 @@ const Header: React.FC = () => {
                                 <li><a href="!#">404 Trang</a></li>
                                 <li><a href="!#">Câu hỏi thường gặp</a></li>
                             </ul>
-                        </li>
+                        </li> */}
                         <li className="nav-item dropdown dropdown-slide">
                             <a className="nav-link dropdown-toggle" href="!#" id="navbarDropdown3" role="button" data-delay="350"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Cửa hàng.
-                            </a>
-                            <ul className="dropdown-menu" aria-labelledby="navbarDropdown3">
+                                <Link to={{ pathname: "/shop" }}>Cửa hàng</Link>
+                                                            </a>
+                            {/* <ul className="dropdown-menu" aria-labelledby="navbarDropdown3">
                                 <li><Link to={{ pathname: "/shop" }}>Cửa hàng</Link></li>
                                 <li><Link to={{ pathname: "/checkout" }}>Thủ tục thanh toán</Link></li>
-                            </ul>
+                            </ul> */}
                         </li>
 
                     </ul>
@@ -139,11 +139,11 @@ const Header: React.FC = () => {
                     </li>
                     <li className="nav-item dropdown dropdown-slide list-inline-item">
                         <a className="nav-link dropdown-toggle" href="!#" id="navbarDropdown3" role="button" data-delay="350"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i className="tf-ion-ios-person"></i>
                         </a>
                         <ul className="dropdown-menu" aria-labelledby="navbarDropdown3">
-                            <li><a type = "button" onClick={onLogout}>Đăng xuất</a></li>
+                            <li><a type="button" onClick={onLogout}>Đăng xuất</a></li>
                             <li><Link to={{ pathname: "/history" }}>lịch sử đơn hàng</Link></li>
                             <li><Link to={{ pathname: "/dashboard" }}>Quản trị</Link></li>
                             <li><Link to={{ pathname: "/login" }}>Đăng nhập</Link></li>

@@ -72,6 +72,9 @@ const Toast = Swal.mixin({
 })
 
 const OrderHistory2 = () => {
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
+    const format =(value)=> new Intl.NumberFormat('vi-VN', config).format(value)
+
     let value_new: number;
     const [value, setValue] = React.useState(0);
     const accessToken = useAuthStore((e) => e.accessToken);
@@ -225,7 +228,7 @@ const OrderHistory2 = () => {
     }
     const onClickUpdateStatus = (status_id: number, order: IHistory) => {
         const index = history.indexOf(order)
-        updateStatus(status_id, order.id, accessToken).then((res) => {
+        updateStatus(status_id, order.id, accessToken).then(() => {
             let newList: IHistory[] = [];
             if (index === 0) {
                 newList = newList.concat(history.slice(1));
@@ -277,10 +280,6 @@ const OrderHistory2 = () => {
             })
         ));
     }, [history])
-    const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        console.log('Change:', e.target.value);
-        setNote(e.target.value)
-    };
     function checkDate(date_start: Date) {
         console.log(date_start);
         let date_now = new Date().getTime();
@@ -315,9 +314,9 @@ const OrderHistory2 = () => {
                         {row.id}
                     </TableCell>
                     <TableCell align="center">{row.total_quantity}</TableCell>
-                    <TableCell align="center">{row.total_price} </TableCell>
+                    <TableCell align="center">{format(row.total_price)} </TableCell>
                     <TableCell align="center">{row.fee_money} </TableCell>
-                    <TableCell align="center">{row.totalPrice} </TableCell>
+                    <TableCell align="center">{format(row.totalPrice)} </TableCell>
                     <TableCell align="center" hidden={!(row.status === 5)}>Chờ xác nhận</TableCell>
                     <TableCell align="center" hidden={!(row.status === 6)}>Chờ xác ship lấy hàng</TableCell>
                     <TableCell align="center" hidden={!(row.status === 7)}>Đang giao hàng</TableCell>
@@ -406,22 +405,22 @@ const OrderHistory2 = () => {
                                                 </TableCell>
                                                 <TableCell align="center">{order_item.option1 + ',' + order_item.option2 + ',' + order_item.option3}</TableCell>
                                                 <TableCell align="center">{order_item.quantity}</TableCell>
-                                                <TableCell align="center">{order_item.price}</TableCell>
-                                                <TableCell align="center">{order_item.total_price}</TableCell>
+                                                <TableCell align="center">{format(order_item.price)}</TableCell>
+                                                <TableCell align="center">{format(order_item.total_price)}</TableCell>
                                             </TableRow>
                                         ))}
                                         <TableRow>
                                             <TableCell rowSpan={4} colSpan={3} />
                                             <TableCell colSpan={2}>Tổng phụ:</TableCell>
-                                            <TableCell align="center">{row.total_price} VNĐ</TableCell>
+                                            <TableCell align="center">{format(format(row.total_price))} VNĐ</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Phí vận chuyển:</TableCell>
-                                            <TableCell align="center">{row.fee_money} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.fee_money)} VNĐ</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Tổng:</TableCell>
-                                            <TableCell align="center">{row.totalPrice} VNĐ</TableCell>
+                                            <TableCell align="center">{format(format(row.totalPrice))} VNĐ</TableCell>
                                         </TableRow>
                                         <TableRow hidden={value === 3 ? false : true}>
                                             <TableCell colSpan={2}></TableCell>
@@ -500,8 +499,8 @@ const OrderHistory2 = () => {
                                                     </TableCell>
                                                     <TableCell align="center">{order_item.option1 + ',' + order_item.option2 + ',' + order_item.option3}</TableCell>
                                                     <TableCell align="center">{order_item.quantity}</TableCell>
-                                                    <TableCell align="center">{order_item.price}</TableCell>
-                                                    <TableCell align="center">{order_item.total_price}</TableCell>
+                                                    <TableCell align="center">{format(order_item.price)}</TableCell>
+                                                    <TableCell align="center">{format(order_item.total_price)}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -544,7 +543,7 @@ const OrderHistory2 = () => {
                         {row.id}
                     </TableCell>
                     <TableCell align="center">{row.total_quantity_return}</TableCell>
-                    <TableCell align="center">{row.total_price_return} </TableCell>
+                    <TableCell align="center">{format(row.total_price_return)} </TableCell>
                     <TableCell align="center">{row.note} </TableCell>
                     <TableCell align="center" hidden={!(row.status_return === 12)}>Chờ xem xét</TableCell>
                     <TableCell align="center" hidden={!(row.status_return === 13)}>Shop đợi nhận hàng hoàn</TableCell>
@@ -583,8 +582,8 @@ const OrderHistory2 = () => {
                                                 </TableCell>
                                                 <TableCell align="center">{order_item.optionProduct}</TableCell>
                                                 <TableCell align="center">{order_item.quantity}</TableCell>
-                                                <TableCell align="center">{order_item.price}</TableCell>
-                                                <TableCell align="center">{order_item.totalPrice}</TableCell>
+                                                <TableCell align="center">{format(order_item.price)}</TableCell>
+                                                <TableCell align="center">{format(order_item.totalPrice)}</TableCell>
                                             </TableRow>
                                         ))}
                                         <TableRow>
@@ -924,7 +923,4 @@ const OrderHistory2 = () => {
 }
 export default OrderHistory2
 
-function useCallback(arg0: any, arg1: never[]) {
-    throw new Error("Function not implemented.");
-}
 
