@@ -4,7 +4,7 @@ import { getAllProduct } from "../service/HomePage";
 import { IHomePage } from "../type/HomePage";
 
 function Shop() {
-
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const [products, setProducts] = useState([{} as IHomePage]);
 
     useEffect(() => {
@@ -89,10 +89,9 @@ function Shop() {
                                         <div className="product">
                                             <div className="product-wrap">
                                                 <Link to={{ pathname: `/single-product/${p.id}` }}>
-                                                <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
+                                                    <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
+                                                    <img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" />
                                                 </Link>
-                                                  {/* <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" /></a> */}
-                                                <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" /></a>
                                             </div>
 
                                             <span className="onsale">Sale</span>
@@ -102,12 +101,12 @@ function Shop() {
                                             </div>
 
                                             <div className="product-info">
-                                            <Link to={{ pathname: `/single-product/${p.id}` }}>
-                                                {/* <h2 className="product-title h5 mb-0"><a href="/product-single">{p.name}</a></h2> */}
-                                                <h2 className="product-title h5 mb-0">{p.name}</h2>
-                                            </Link>
+                                                <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                    {/* <h2 className="product-title h5 mb-0"><a href="/product-single">{p.name}</a></h2> */}
+                                                    <h2 className="product-title h5 mb-0">{p.name}</h2>
+                                                </Link>
                                                 <span className="price">
-                                                    {p.wholesale_price}
+                                                    {new Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
                                                 </span>
                                             </div>
                                         </div>

@@ -5,13 +5,14 @@ import { addToCart, getProductOption } from "../service/SignleProduct";
 import { IInfo } from "../type/HomePage";
 import FormLabel from '@mui/joy/FormLabel';
 import Radio, { radioClasses } from '@mui/joy/Radio';
+import Button from '@mui/material/Button';
 import RadioGroup from '@mui/joy/RadioGroup';
 import Sheet from '@mui/joy/Sheet';
 import { useAuthStore } from "../../hooks/zustand/auth";
 import Swal from "sweetalert2";
 function SingleProduct() {
     const accessToken = useAuthStore((e) => e.accessToken)
-    let nf = new Intl.NumberFormat();
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const { id } = useParams();
     const [infos, setInfos] = useState({} as IInfo);
     const [option1, setOption1] = useState([]);
@@ -21,7 +22,7 @@ function SingleProduct() {
     const [op1, setOp1] = useState('');
     const [op2, setOp2] = useState('');
     const [op3, setOp3] = useState('');
-
+    const [disable, setDisable] = useState(false);
     const [quantityBuy, setQuantityBuy] = useState(1);
 
     const Toast = Swal.mixin({
@@ -62,8 +63,11 @@ function SingleProduct() {
         console.log(" op2:" + op2),
         console.log(" op3:" + op3),
         getProductOption(parseInt(id as string), op1 as string, op2 as string, op3 as string).then((response) => {
-            console.log(response.data)
+            console.log(response.data.quantity > 0)
             setInfos(response.data)
+            setDisable(response.data.quantity > 0)
+        }, (err) => {
+            setDisable(false)
         }))
     const addToCartCustomer = () => {
         console.log('In add to cart')
@@ -76,16 +80,13 @@ function SingleProduct() {
             })
         }, (err) => {
             console.log(err)
-            if (role == 'anonymous') {
-                navigate('/login')
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Thêm vào giỏ thất bại'
-                })
-            }
+            Toast.fire({
+                icon: 'error',
+                title: err.response.data.description
+            })
         })
     }
+    const checkQuantity = (quantity: any, quantityBuy: any) => { return Number(quantityBuy) > quantity }
     return (
         <div className="single-product-container">
             <section className="page-header">
@@ -149,27 +150,13 @@ function SingleProduct() {
 
                                 <hr />
 
-                                <h3 className="product-price">{nf.format(infos.price)} vnd<del>$119.90</del></h3>
+                                <h3 className="product-price">{new Intl.NumberFormat('vi-VN', config).format(infos.price)}vnd
+                                {/* <del>$119.90</del> */}
+                                </h3>
 
                                 <p className="product-description my-4 ">
                                     Điều rất quan trọng đối với khách hàng là phải chú ý đến quá trình adipiscing. Người ta cho rằng, bản thân lao động là do có người bỏ mặc cho đau đớn, hưởng lợi. Tất cả các kết quả hạnh phúc của chúng tôi, kết quả của họ? Nó sẽ là hậu quả của việc từ chối chính lời nói.
                                 </p>
-
-                                {/* <form className="cart" action="#" method="post"> */}
-                                <div className="quantity d-flex align-items-center">
-                                    <input type="number" id="qty" className="input-text qty text form-control w-25 mr-3"
-
-                                        onChange={(e: any) => {
-                                            setQuantityBuy(e.target.value)
-                                        }}
-                                        max={infos.quantity} name="quantity" size={4} value={quantityBuy} />
-                                    <button className="btn btn-main btn-small"
-                                        onClick={() => {
-                                            addToCartCustomer()
-                                        }}
-                                    >Add to cart</button>
-                                </div>
-                                {/* </form> */}
 
 
                                 <div className="color-swatches mt-4 d-flex align-items-center">
@@ -310,8 +297,38 @@ function SingleProduct() {
                                                 </Sheet>
                                             ))}
                                         </RadioGroup>
-                                    </div>
 
+                                    </div>
+                                    {/* <form className="cart" action="#" method="post"> */}
+                                    <div className="mt-3">
+                                        <div hidden={disable}>Lựa chọn này đã hết hàng!</div>
+                                        <div className="quantity d-flex align-items-center">
+                                            <input type="number" id="qty" className="input-text qty text form-control w-25 mr-3"
+
+                                                onChange={(e: any) => {
+                                                    setQuantityBuy(e.target.value)
+                                                    if (checkQuantity(infos.quantity, e.target.value)) {
+                                                        Toast.fire({
+                                                            icon: 'error',
+                                                            title: 'Số lượng trong kho không đủ'
+                                                        })
+                                                        setQuantityBuy(infos.quantity)
+                                                    }
+                                                    if (e.target.value < 1) {
+                                                        Toast.fire({
+                                                            icon: 'error',
+                                                            title: 'Số lượng tối thiểu là 1'
+                                                        })
+                                                        setQuantityBuy(1)
+                                                    }
+                                                }}
+                                                min='1' max={infos.quantity} name="quantity" size={4} value={quantityBuy} />
+                                            <Button variant="contained" disabled={!disable} color="primary" size="large" onClick={() => {
+                                                addToCartCustomer()
+                                            }}>Add to cart</Button>
+                                        </div>
+                                    </div>
+                                    {/* </form> */}
                                     <div className="product-share mt-5">
                                         <ul className="list-inline">
                                             <li className="list-inline-item">
@@ -331,8 +348,8 @@ function SingleProduct() {
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
 
                     <div className="row">
                         <div className="col-lg-12">

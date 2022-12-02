@@ -1,4 +1,6 @@
 module.exports = {
+  // content: ['./src/**/*.{js,jsx,ts,tsx}'],
+
   content: ['./src/user/components/common/**/*.{js,jsx,ts,tsx}', './src/user/components/checkout/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
@@ -8,8 +10,8 @@ module.exports = {
           '100%': { opacity: 0.4 },
         },
         popup: {
-          '0%': {opacity: 0, marginTop: -12},
-          '100%':  {opacity: 1, marginTop: 0}
+          '0%': { opacity: 0, marginTop: -12 },
+          '100%': { opacity: 1, marginTop: 0 }
         }
       },
       animation: {

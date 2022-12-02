@@ -1,7 +1,6 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../../hooks/zustand/auth";
-import { addOrderPush, getCartItems, getInfoHuyen, getInfoTP, getInfoXa, moneyFee } from "../service/CheckoutService";
+import { addOrderPush, getInfoHuyen, getInfoTP, getInfoXa, moneyFee } from "../service/CheckoutService";
 import { ICartItem } from "../type/CartItem";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,7 +13,7 @@ import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { IInfoHuyen, IInfoMoneyFee, IInfoTP, IInfoXa } from "../type/InfoGHN";
-import { Avatar, NativeSelect, TextField } from "@mui/material";
+import { Avatar, NativeSelect } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 function Checkout() {
@@ -45,12 +44,7 @@ function Checkout() {
 
     let id_cart_item_local = JSON.parse(localStorage.getItem('test1') || '{}')
     useEffect(() => {
-        getCartItems(id_cart_item_local as any, accessToken).then((response) => {
-            setCartItems(response.data)
-        }, (err) => {
-            console.log(err)
-        })
-
+        setCartItems(JSON.parse(localStorage.getItem('listItem') || "[]"))
         getInfoTP().then((response) => {
             setListTP(response.data.infomation)
         })
@@ -72,7 +66,6 @@ function Checkout() {
 
         })
     }, [hy])
-    let nf = new Intl.NumberFormat();
     let sumPrice = 0;
     let sumQuantity = 0;
     const [totalPrice, setTotalPrice] = useState(0);
@@ -107,7 +100,7 @@ function Checkout() {
             console.log(err)
         })
     }
-    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9}
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
 
 
 
@@ -160,6 +153,7 @@ function Checkout() {
                                                         onChange={(e) => {
                                                             setNameTP(e.target.options[e.target.selectedIndex].text)
                                                             setTP(String(e.target.value))
+                                                            setHy('')
                                                         }}
                                                     >
                                                         <option aria-label="None" value="" />
@@ -184,7 +178,7 @@ function Checkout() {
                                                         Huyện
                                                     </InputLabel>
                                                     <NativeSelect
-                                                        defaultValue={30}
+                                                        defaultValue={hy}
                                                         inputProps={{
                                                             name: 'Huyen',
                                                             id: 'uncontrolled-native1',
@@ -192,6 +186,7 @@ function Checkout() {
                                                         onChange={(e) => {
                                                             setNameHy(e.target.options[e.target.selectedIndex].text)
                                                             setHy(String(e.target.value))
+                                                            setXa('')
                                                         }}
                                                     >
                                                         <option aria-label="None" value="" />
@@ -216,7 +211,7 @@ function Checkout() {
                                                         Xã
                                                     </InputLabel>
                                                     <NativeSelect
-                                                        defaultValue={30}
+                                                        defaultValue={xa}
                                                         inputProps={{
                                                             name: 'Xa',
                                                             id: 'uncontrolled-native1',
@@ -243,7 +238,7 @@ function Checkout() {
                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell align="center" >Tên sản phẩm</TableCell>
+                                                    <TableCell align="center" colSpan={2} >Tên sản phẩm</TableCell>
                                                     <TableCell align="center">Tùy chọn</TableCell>
                                                     <TableCell align="center">Số lượng</TableCell>
                                                     <TableCell align="center">Giá tiền (VNĐ)</TableCell>
@@ -258,6 +253,9 @@ function Checkout() {
                                                     >
                                                         <TableCell component="th" scope="row">
                                                             <Avatar src={row.image} />
+                                                        </TableCell>
+                                                        <TableCell component="th" scope="row">
+                                                            {row.name.split("-")[0]}
                                                         </TableCell>
                                                         <TableCell align="center">{row.option1 + ' - ' + row.option2 + ' - ' + row.option3}</TableCell>
                                                         <TableCell align="center">{row.quantity}</TableCell>
@@ -279,13 +277,14 @@ function Checkout() {
                             <div className="col-md-6 col-lg-4">
                                 <div className="product-checkout-details mt-5 mt-lg-0">
                                     <h4 className="mb-4 border-bottom pb-4">Tóm tắt theo thứ tự</h4>
-
-                                    <div className="media product-card">
-                                        <p>Áo sơ mi Kirby</p>
-                                        <div className="media-body text-right">
-                                            <p className="h5">1 x $249</p>
+                                    {cartItem.map((row) => (
+                                        <div className="media product-card">
+                                            <p>{row.name.split("-")[0]}</p>
+                                            <div className="media-body text-right">
+                                                <p className="h5">{row.quantity}x{new Intl.NumberFormat('vi-VN', config).format(row.wholesale_price)} </p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ))}
 
                                     <ul className="summary-prices list-unstyled mb-4">
                                         <li className="d-flex justify-content-between">
@@ -341,6 +340,7 @@ function Checkout() {
                                         onClick={() => {
                                             addOrder123()
                                         }}
+                                        disabled={!(tp !== '' && hy !== '' && xa !== '')}
                                     >Đặt hàng</button>
                                 </div>
                             </div>

@@ -24,6 +24,27 @@ export const forgotPass = async (email: string) => {
     return await axios.post(`${base_url_public}/user/forgotPass`, { email })
 }
 
+export const infoUser = async (accessToken: string) => {
+    const config = {
+        headers: {
+            token: accessToken,
+        }
+    }
+    return await axios.get(`${base_url_public}/user/info`, config)
+}
+
+
+export const updateProfile = async (name: string, phone: string, email: string, accessToken: string) => {
+    const config = {
+        headers: {
+            token: accessToken,
+        }
+    }
+    return await axios.post(`${base_url_public}/user/profile`, { name, phone, email }, config)
+}
+
+
+
 // export const resetPass = async (email: string, token) => {
 //     const config = {
 //         headers: {
