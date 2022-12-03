@@ -43,6 +43,14 @@ function Checkout() {
 
 
     let id_cart_item_local = JSON.parse(localStorage.getItem('test1') || '{}')
+
+    let id_cart_it_main = JSON.parse(localStorage.getItem('listItem') || "[]").map((e: any) => {
+        return e.id_cart_item
+    });
+
+
+    console.log('-------------s--', id_cart_it_main);
+
     useEffect(() => {
         setCartItems(JSON.parse(localStorage.getItem('listItem') || "[]"))
         getInfoTP().then((response) => {
@@ -92,8 +100,8 @@ function Checkout() {
 
     const navigate = useNavigate();
     const addOrder123 = () => {
-        console.log('OKOKOOKk' + (nameXa + ' ' + nameHy + ' ' + nameTP) + 'comming' + id_cart_item_local + moneyFeeShip.total + accessToken)
-        addOrderPush((nameXa + ' ' + nameHy + ' ' + nameTP), 'comming', id_cart_item_local, moneyFeeShip.total, accessToken).then((res) => {
+        console.log('OKOKOOKk' + (nameXa + ' ' + nameHy + ' ' + nameTP) + 'comming' + id_cart_it_main + moneyFeeShip.total + accessToken)
+        addOrderPush((nameXa + ' ' + nameHy + ' ' + nameTP), 'comming', id_cart_it_main, moneyFeeShip.total, accessToken).then((res) => {
             console.log('12313123123' + res)
             navigate("/page-checkout")
         }, (err) => {

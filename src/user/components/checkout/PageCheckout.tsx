@@ -25,7 +25,7 @@ function PageCheckout() {
     getAmount(accessToken).then((res) => {
       setAmout(res.data)
     })
-  })
+  }, [])
 
   let paymentAmount = amount.total // ve sau thay cai nay nhe pe Duc
   let paymentID = amount.id// ve sau thay cai nay nhe pe Duc
