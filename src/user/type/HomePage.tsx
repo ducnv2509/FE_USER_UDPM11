@@ -7,6 +7,12 @@ export interface IHomePage {
 }
 
 
+export interface ICategory {
+    id:number,
+    name: string;
+    description: string;
+}
+
 export interface IInfo {
     key: React.Key;
     id: number,

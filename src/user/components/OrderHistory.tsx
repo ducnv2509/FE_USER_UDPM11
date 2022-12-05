@@ -152,7 +152,7 @@ const OrderHistory2 = () => {
             idOrderItem.push(e.id)
         })
         console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
-        returnOrder(note.note_txt, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
+        returnOrder('Lỗi hàng', idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
             console.log(res.data)
             onClickHistory(8)
             Toast.fire({
@@ -435,7 +435,7 @@ const OrderHistory2 = () => {
                                                 hidden={checkDate(row.date_main) || row.isReturn}
 
                                             > <Button
-                                                variant="contained" color="error" onClick={() => { setOpenModalReturn(row.id); setSelected([]); setNote({ note_txt: '' }) }}>Yêu cầu trả hàng</Button></TableCell>
+                                                variant="contained" color="error" onClick={() => { setOpenModalReturn(row.id); setSelected([]); }}>Yêu cầu trả hàng</Button></TableCell>
                                             <TableCell hidden={!row.isReturn} >Hoá đơn đã trả hàng</TableCell>
                                             <TableCell hidden={!checkDate(row.date_main)} >Hoá đơn quá hạn trả</TableCell>
                                         </TableRow>
@@ -516,7 +516,7 @@ const OrderHistory2 = () => {
                                             ))}
                                         </TableBody>
                                     </Table>
-                                    <label htmlFor="">Lý do trả hàng:</label>
+                                    {/* <label htmlFor="">Lý do trả hàng:</label>
                                     <>
                                         <Autocomplete
                                             disablePortal
@@ -527,7 +527,7 @@ const OrderHistory2 = () => {
                                                 onChange={(e) => setNote(prev => ({ ...prev, note_txt: e.target.value }))}
                                                 label="Movie" />}
                                         />
-                                    </>
+                                    </> */}
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
@@ -609,7 +609,7 @@ const OrderHistory2 = () => {
                                         <TableRow>
                                             <TableCell rowSpan={4} colSpan={3} />
                                             <TableCell colSpan={2}>Tổng:</TableCell>
-                                            <TableCell align="center">{row.total_quantity_return} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.total_price_return)} </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>

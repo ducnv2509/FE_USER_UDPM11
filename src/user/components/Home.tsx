@@ -10,8 +10,6 @@ function Home() {
     const [page, setPage] = useState({ fist: 0, last: 10 });
     useEffect(() => {
         document.title = "Home Page"
-        console.log("adadasd");
-
         getAllProduct().then((r) => {
             setProducts(r.data);
             console.log(r.data.reverse());
