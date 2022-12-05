@@ -245,7 +245,6 @@ function Shop() {
                                                         }}
                                                         defaultChecked />} label={e.name} />
 
-                                                e.name
                                             </>
                                         )
                                     })}
