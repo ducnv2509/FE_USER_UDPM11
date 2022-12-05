@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 function Checkout() {
     const accessToken = useAuthStore((e) => e.accessToken)
+    const format = (value: any) => new Intl.NumberFormat('vi-VN', config).format(value)
 
 
     // console.log('Local checkout --------------' + JSON.parse(localStorage.getItem('test1') || '{}'))
@@ -268,10 +269,10 @@ function Checkout() {
                                                         <TableCell align="center">{row.option1 + ' - ' + row.option2 + ' - ' + row.option3}</TableCell>
                                                         <TableCell align="center">{row.quantity}</TableCell>
                                                         <TableCell align="center">
-                                                            {new Intl.NumberFormat('vi-VN', config).format(row.wholesale_price)}
+                                                            {format(row.wholesale_price)}
                                                         </TableCell>
                                                         <TableCell align="center">
-                                                            {new Intl.NumberFormat('vi-VN', config).format(row.priceTotal)}
+                                                            {format(row.priceTotal)}
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
@@ -289,7 +290,7 @@ function Checkout() {
                                         <div className="media product-card">
                                             <p>{row.name.split("-")[0]}</p>
                                             <div className="media-body text-right">
-                                                <p className="h5">{row.quantity}x{new Intl.NumberFormat('vi-VN', config).format(row.wholesale_price)} </p>
+                                                <p className="h5">{row.quantity}x{format(row.wholesale_price)} </p>
                                             </div>
                                         </div>
                                     ))}
@@ -298,19 +299,19 @@ function Checkout() {
                                         <li className="d-flex justify-content-between">
                                             <span >Tổng phụ:</span>
                                             <span className="h5">
-                                                {new Intl.NumberFormat('vi-VN', config).format(totalPrice)}
+                                                {format(totalPrice)}
                                             </span>
                                         </li>
                                         <li className="d-flex justify-content-between">
                                             <span >Phí vận chuyển:</span>
                                             <span className="h5">
-                                                {new Intl.NumberFormat('vi-VN', config).format(moneyFeeShip.total)}
+                                                {isNaN(moneyFeeShip.total)? format(0) :format(moneyFeeShip.total)}
                                             </span>
                                         </li>
                                         <li className="d-flex justify-content-between">
                                             <span>Tổng:</span>
                                             <span className="h5">
-                                                {new Intl.NumberFormat('vi-VN', config).format(moneyFeeShip.total + totalPrice)}
+                                                {isNaN(moneyFeeShip.total + totalPrice) ? format(0) : format(moneyFeeShip.total + totalPrice)}
                                             </span>
                                         </li>
                                     </ul>

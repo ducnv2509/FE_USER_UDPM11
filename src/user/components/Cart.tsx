@@ -1,5 +1,4 @@
 import { Avatar, Input, Button } from "@mui/material";
-import React, { useEffect, useState } from "react"
 import { useAuthStore } from "../../hooks/zustand/auth";
 import { showCart } from "../service/SignleProduct";
 import { ICartItem } from "../type/CartItem";
@@ -8,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteCart, updateQuantityCart } from "../service/HistoryOrder";
 import Swal from 'sweetalert2';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useEffect, useState} from "react";
 const Cart = () => {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
 
@@ -149,7 +149,7 @@ const Cart = () => {
             }
         },
         {
-            field: 'name', headerName: 'Tên sản phẩm', width: 150, headerAlign: 'center', align: 'center',
+            field: 'name', headerName: 'Tên sản phẩm', width: 210, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
                     <>
@@ -158,10 +158,10 @@ const Cart = () => {
                 );
             }
         },
-        { field: 'option1', headerName: 'Màu', width: 70, headerAlign: 'center', align: 'center', },
-        { field: 'option2', headerName: 'Kích cỡ', width: 70, headerAlign: 'center', align: 'center', },
+        { field: 'option1', headerName: 'Màu', width: 100, headerAlign: 'center', align: 'center', },
+        { field: 'option2', headerName: 'Kích cỡ', width: 100, headerAlign: 'center', align: 'center', },
         { field: 'option3', headerName: 'Chất liệu', width: 100, headerAlign: 'center', align: 'center', },
-        { field: 'quantity', headerName: 'Số lượng', width: 130, headerAlign: 'center', align: 'center', type: 'number', editable: true,
+        { field: 'quantity', headerName: 'Số lượng', width: 100, headerAlign: 'center', align: 'center', type: 'number', editable: true,
             renderCell: (params) => {
                 return (
                     <Input inputProps={{ min: 1, style: { textAlign: 'center' } }} type="number" minRows={1} value={params.row.quantity} onChange={() => {
@@ -190,7 +190,7 @@ const Cart = () => {
             }
         },
         {
-            field: '', headerName: 'Chỉnh sửa', width: 100, headerAlign: 'center', align: 'center',
+            field: '', headerName: 'Xoá', width: 100, headerAlign: 'center', align: 'center',
             renderCell: (params) => {
                 return (
                     <>
