@@ -167,26 +167,30 @@ const Header: React.FC = () => {
                                 <li><a href="!#">Câu hỏi thường gặp</a></li>
                             </ul>
                         </li> */}
-                        <li className="nav-item dropdown dropdown-slide">
-                            <a className="nav-link dropdown-toggle" href="!#" id="navbarDropdown3" role="button" data-delay="350"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <Link to={{ pathname: "/shop" }}>Cửa hàng</Link>
-                            </a>
-                            {/* <ul className="dropdown-menu" aria-labelledby="navbarDropdown3">
-                                <li><Link to={{ pathname: "/shop" }}>Cửa hàng</Link></li>
-                                <li><Link to={{ pathname: "/checkout" }}>Thủ tục thanh toán</Link></li>
-                            </ul> */}
+                        <li
+                            className="nav-item active">
+                            <Link className="nav-link" to={{ pathname: "/shop" }}>Cửa hàng</Link>
                         </li>
                         <li
                             hidden={idUser != 'Bạn' ? false : true}
                             className="nav-item active">
                             <Link className="nav-link" to={{ pathname: "/history" }}>lịch sử đơn hàng</Link>
                         </li>
+
+
                     </ul>
                 </div>
 
-                <ul className="top-menu list-inline mb-0 d-none d-lg-block" id="top-menu">
 
+                <ul className="top-menu list-inline mb-0 d-none d-lg-block" id="top-menu">
+                    <li
+                        hidden={idUser != 'Bạn' ? false : true}
+                        className="nav-item active dropdown dropdown-slide list-inline-item">
+                        <Link className="nav-link" to={{ pathname: "/cart" }}>
+                            <i className="tf-ion-android-cart">
+                            </i>
+                        </Link>
+                    </li>
                     <li className="nav-item dropdown dropdown-slide list-inline-item">
                         <a className="nav-link dropdown-toggle" href="!#" id="navbarDropdown3" role="button" data-delay="350"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -275,9 +279,10 @@ const Header: React.FC = () => {
                                 label="Tên"
                                 value={profile.name}
                                 {...register('name')}
-                                onChange={(e) =>{
+                                onChange={(e) => {
                                     console.log(profile)
-                                    setProfile(prev => ({ ...prev, name: e.target.value }))}}
+                                    setProfile(prev => ({ ...prev, name: e.target.value }))
+                                }}
                             />
                             <TextField
                                 variant="outlined"

@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Button, Tabs, Checkbox, } from "@mui/material";
+import { Button, Tabs, Checkbox, TextField, Autocomplete, } from "@mui/material";
 import Tab from '@mui/material/Tab';
 import ButtonJoy from '@mui/joy/Button';
 import Divider from '@mui/joy/Divider';
@@ -71,6 +71,8 @@ export const Toast = Swal.mixin({
     timerProgressBar: true,
 })
 
+
+
 const OrderHistory2 = () => {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const format = (value: any) => new Intl.NumberFormat('vi-VN', config).format(value)
@@ -81,7 +83,7 @@ const OrderHistory2 = () => {
     const [currentStatus, setCurrentStatus] = React.useState(5);
     const [openModal, setOpenModal] = React.useState(0);
     const [openModalReturn, setOpenModalReturn] = React.useState(0);
-    const [note, setNote] = useState('');
+    const [note, setNote] = useState({ note_txt: '' });
     const [word, setWord] = useState('');
     const [selected, setSelected] = React.useState<IOrderItem[]>([]);
 
@@ -150,7 +152,7 @@ const OrderHistory2 = () => {
             idOrderItem.push(e.id)
         })
         console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
-        returnOrder(note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
+        returnOrder('Lỗi hàng', idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
             console.log(res.data)
             onClickHistory(8)
             Toast.fire({
@@ -172,7 +174,12 @@ const OrderHistory2 = () => {
     const [history, setHistory] = useState([] as IHistory[]);
     const [historyReturn, setHistoryReturn] = useState([] as IOrderReturn[]);
     const [loading, setLoading] = useState(false);
-
+    const top100Films = [
+        { label: 'Hàng lỗi' },
+        { label: 'Nhầm hàng' },
+        { label: 'Nhầm size, màu, chất liệu' },
+        { label: 'Hàng không đúng như mô tả' },
+    ];
 
     useEffect(() => {
         setLoading(true)
@@ -289,7 +296,7 @@ const OrderHistory2 = () => {
         const diff = startDate.diff(timeEnd);
         const diffDuration = moment.duration(diff);
 
-        if (diffDuration.days() > 3) {
+        if (diffDuration.days() >= 3) {
             return true
         } else {
             return false
@@ -412,19 +419,23 @@ const OrderHistory2 = () => {
                                         <TableRow>
                                             <TableCell rowSpan={4} colSpan={3} />
                                             <TableCell colSpan={2}>Tổng phụ:</TableCell>
-                                            <TableCell align="center">{format(format(row.total_price))} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.total_price)}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Phí vận chuyển:</TableCell>
-                                            <TableCell align="center">{format(row.fee_money)} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.fee_money)}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Tổng:</TableCell>
-                                            <TableCell align="center">{format(format(row.totalPrice))} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.totalPrice)}</TableCell>
                                         </TableRow>
                                         <TableRow hidden={value === 3 ? false : true}>
                                             <TableCell colSpan={2}></TableCell>
-                                            <TableCell align="right" > <Button variant="contained" color="error" onClick={() => { setOpenModalReturn(row.id); setSelected([]); setNote('') }}>Yêu cầu trả hàng</Button></TableCell>
+                                            <TableCell align="right"
+                                                hidden={checkDate(row.date_main) || row.isReturn}
+
+                                            > <Button
+                                                variant="contained" color="error" onClick={() => { setOpenModalReturn(row.id); setSelected([]); }}>Yêu cầu trả hàng</Button></TableCell>
                                             <TableCell hidden={!row.isReturn} >Hoá đơn đã trả hàng</TableCell>
                                             <TableCell hidden={!checkDate(row.date_main)} >Hoá đơn quá hạn trả</TableCell>
                                         </TableRow>
@@ -505,9 +516,18 @@ const OrderHistory2 = () => {
                                             ))}
                                         </TableBody>
                                     </Table>
-                                    <label htmlFor="">Lý do trả hàng:</label>
-                                    <><TextArea onChange={(e) => handleInputOnchange(e)} style={{ padding: '8px', marginTop: 10, marginBottom: 10 }}
-                                        placeholder="Nhập lý do trả hàng" showCount maxLength={200} /></>
+                                    {/* <label htmlFor="">Lý do trả hàng:</label>
+                                    <>
+                                        <Autocomplete
+                                            disablePortal
+                                            id="combo-box-demo"
+                                            options={top100Films}
+                                            sx={{ width: 300 }}
+                                            renderInput={(params) => <TextField {...params}
+                                                onChange={(e) => setNote(prev => ({ ...prev, note_txt: e.target.value }))}
+                                                label="Movie" />}
+                                        />
+                                    </> */}
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
@@ -589,7 +609,7 @@ const OrderHistory2 = () => {
                                         <TableRow>
                                             <TableCell rowSpan={4} colSpan={3} />
                                             <TableCell colSpan={2}>Tổng:</TableCell>
-                                            <TableCell align="center">{row.total_quantity_return} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.total_price_return)} </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>

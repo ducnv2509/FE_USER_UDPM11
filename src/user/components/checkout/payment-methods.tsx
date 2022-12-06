@@ -30,25 +30,37 @@ const PaymentMethods = (props: PaymentMethodsProps) => {
   const [value, setValue] = useState('');
 
 
-  const getPaymentMethod = async () => {
-    const paymentMethodRes = await paymentApi.getPaymentMethod('11')
-    setPaymentMethod(paymentMethodRes)
-  }
-  const getListBank = async () => {
-    const listBankRes = await paymentApi.getListBank()
-    console.log('thid id ' + listBankRes);
+  // const getPaymentMethod = async () => {
+  //   const paymentMethodRes = await paymentApi.getPaymentMethod('11')
+  //   setPaymentMethod(paymentMethodRes)
+  // }
+  // const getListBank = async () => {
+  //   const listBankRes = await paymentApi.getListBank()
+  //   console.log('thid id ' + listBankRes);
 
-    setListBank(listBankRes)
-  }
+  //   setListBank(listBankRes)
+  // }
+
+  // useEffect(() => {
+  //   getPaymentMethod()
+  //   getListBank()
+  //   console.log(paymentMethods);
+  // }, [])
 
   useEffect(() => {
+    const getPaymentMethod = async () => {
+      const paymentMethodRes = await paymentApi.getPaymentMethod('11')
+      setPaymentMethod(paymentMethodRes)
+    }
+    const getListBank = async () => {
+      const listBankRes = await paymentApi.getListBank()
+      console.log('thid id ' + listBankRes);
+
+      setListBank(listBankRes)
+    }
     getPaymentMethod()
     getListBank()
-    console.log(paymentMethods);
   }, [])
-
-
-
   return (
     <div className="shadow overflow-hidden sm:rounded-md">
       <div className="px-4 py-5 bg-white sm:p-6">

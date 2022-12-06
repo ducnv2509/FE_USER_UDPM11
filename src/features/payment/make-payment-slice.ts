@@ -55,7 +55,7 @@ export const makePaymentAsync = createAsyncThunk(
             const response = await paymentApi.makePayment(request)
             // console.log('check bug request', request)
 
-            // console.log('check bug', response)
+            // console.log('check bug ---------------------', request.AgainLink)
             return response
         } catch (error) {
             if (axios.isAxiosError(error)) {
