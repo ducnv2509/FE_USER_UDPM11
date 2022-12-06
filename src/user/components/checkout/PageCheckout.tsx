@@ -18,8 +18,10 @@ export interface PaymentMethodsFormData {
 
 
 function PageCheckout() {
+  let objPay = JSON.parse(localStorage.getItem('objPayment') || '{}');
+  console.log(objPay);
 
-  const[amount, setAmout] = useState({} as IAmount)
+  const [amount, setAmout] = useState({} as IAmount)
   const accessToken = useAuthStore((e) => e.accessToken)
   useEffect(() => {
     getAmount(accessToken).then((res) => {
@@ -68,7 +70,7 @@ function PageCheckout() {
     if (formSubmit.paymentOption.startsWith('INS-')) {
       dispatch(
         makeOneClickPaymentAsync({
-          amount: paymentAmount.toString(),
+          amount: (objPay.shipMoney + objPay.totalPrice).toString(),
           cardUid: formSubmit.paymentOption,
           userId: Number(userId),
           invoiceId: paymentID,
@@ -79,7 +81,7 @@ function PageCheckout() {
       if (formSubmit.paymentOption === 'DOMESTIC') {
         dispatch(
           makePaymentAsync({
-            amount: paymentAmount.toString(),
+            amount: (objPay.shipMoney + objPay.totalPrice).toString(),
             bankCode: domesticBank,
             paymentMethod: formSubmit.paymentOption,
             userId: Number(userId),
@@ -90,7 +92,7 @@ function PageCheckout() {
       } else {
         dispatch(
           makePaymentAsync({
-            amount: paymentAmount.toString(),
+            amount: (objPay.shipMoney + objPay.totalPrice).toString(),
             paymentMethod: formSubmit.paymentOption,
             userId: Number(userId),
             invoiceId: paymentID,

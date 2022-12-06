@@ -105,7 +105,8 @@ function Checkout() {
         cart_items: id_cart_it_main,
         shipMoney: moneyFeeShip.total,
         accessToken,
-        typePay: 1
+        typePay: 1,
+        totalPrice
     }
 
     const [typePay, setTypePay] = useState(1)
@@ -310,7 +311,7 @@ function Checkout() {
 
                                     <ul className="summary-prices list-unstyled mb-4">
                                         <li className="d-flex justify-content-between">
-                                            <span >Tổng phụ:</span>
+                                            <span >Tổng phụ:</span>totalPrice
                                             <span className="h5">
                                                 {new Intl.NumberFormat('vi-VN', config).format(totalPrice)}
                                             </span>
