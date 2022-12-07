@@ -330,7 +330,7 @@ const OrderHistory2 = () => {
                     <TableCell align="center" hidden={!(row.status === 9)}>Giao hàng thất bại</TableCell>
                     <TableCell align="center" hidden={!(row.status === 10)}>Huỷ bởi người dùng</TableCell>
                     <TableCell align="center" hidden={!(row.status === 11)}>Huỷ bởi admin</TableCell>
-                    <TableCell align="center"> {moment(row.created_time).format('DD/MM/YYYY')}</TableCell>
+                    <TableCell align="center"> {moment(row.created_time).format('DD/MM/YYYY HH:mm:ss')}</TableCell>
                     <TableCell align="center">
                         <Button hidden={value === 2 ? false : true} onClick={() => { onClickUpdateStatus(8, row) }}>
                             Đã nhận được hàng</Button>
