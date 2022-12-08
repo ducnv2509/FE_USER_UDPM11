@@ -169,7 +169,6 @@ const OrderHistory2 = () => {
     };
     const isSelected = (orderItem: IOrderItem) => selected.indexOf(orderItem) !== -1;
     const hasSelected = selected.length > 0;
-
     // let item : IOrderItem;
     const [history, setHistory] = useState([] as IHistory[]);
     const [historyReturn, setHistoryReturn] = useState([] as IOrderReturn[]);
@@ -317,12 +316,12 @@ const OrderHistory2 = () => {
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                     </TableCell>
-                    <TableCell component="th" scope="row">
-                        {row.id}
+                    <TableCell component="th" scope="row" align="center">
+                        {row.code}
                     </TableCell>
                     <TableCell align="center">{row.total_quantity}</TableCell>
                     <TableCell align="center">{format(row.total_price)} </TableCell>
-                    <TableCell align="center">{row.fee_money} </TableCell>
+                    <TableCell align="center">{format(row.fee_money)} </TableCell>
                     <TableCell align="center">{format(row.totalPrice)} </TableCell>
                     <TableCell align="center" hidden={!(row.status === 5)}>Chờ xác nhận</TableCell>
                     <TableCell align="center" hidden={!(row.status === 6)}>Chờ xác ship lấy hàng</TableCell>
@@ -331,17 +330,16 @@ const OrderHistory2 = () => {
                     <TableCell align="center" hidden={!(row.status === 9)}>Giao hàng thất bại</TableCell>
                     <TableCell align="center" hidden={!(row.status === 10)}>Huỷ bởi người dùng</TableCell>
                     <TableCell align="center" hidden={!(row.status === 11)}>Huỷ bởi admin</TableCell>
-                    <TableCell align="center">{row.created_time}</TableCell>
+                    <TableCell align="center">{row.typePay} </TableCell>
+                    <TableCell align="center"> {moment(row.created_time).format('DD/MM/YYYY')}</TableCell>
                     <TableCell align="center">
                         <Button hidden={value === 2 ? false : true} onClick={() => { onClickUpdateStatus(8, row) }}>
                             Đã nhận được hàng</Button>
-                        {/* <Button hidden={value === 0 ? false : true} onClick={() => { console.log(row.id)}}>
-                            Huỷ đơn hàng</Button> */}
                         <Button variant="outlined" color="error"
                             onClick={() => { setOpenModal(row.id); console.log(row.id) }}
                             hidden={value === 0 ? false : true}
                         >
-                            Huỷ đơn
+                            Huỷ
                         </Button>
                         <ModalJoy
                             aria-labelledby="alert-dialog-ModalJoy-title"
@@ -374,7 +372,7 @@ const OrderHistory2 = () => {
                                         Quay Lại
                                     </ButtonJoy>
                                     <Button variant="text" color="error" onClick={() => { onClickUpdateStatus(10, row); setOpenModal(0) }}>
-                                        Huỷ đơn
+                                        Huỷ
                                     </Button>
                                 </Box>
                             </ModalJoyDialog>
@@ -389,7 +387,7 @@ const OrderHistory2 = () => {
                                 <Typography variant="h6" gutterBottom component="div">
                                     Chi tiết
                                 </Typography>
-                                <div>Địa chỉ nhận :  {/*{row.diachi}*/}</div>
+                                <div>Địa chỉ nhận :  {row.address_id}</div>
                                 <Table size="small" aria-label="purchases" >
                                     <TableHead>
                                         <TableRow>
@@ -579,7 +577,7 @@ const OrderHistory2 = () => {
                                 <Typography variant="h6" gutterBottom component="div">
                                     Chi tiết
                                 </Typography>
-                                <div>Địa chỉ nhận :  {/*{row.diachi}*/}</div>
+                                <div>Địa chỉ nhận : </div>
                                 <Table size="small" aria-label="purchases" >
                                     <TableHead>
                                         <TableRow>
@@ -681,6 +679,7 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                             <TableCell align="center">Huỷ Đơn</TableCell>
                                         </TableRow>
@@ -726,6 +725,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -771,6 +772,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                             <TableCell align="center">Xác nhận đơn hàng</TableCell>
                                         </TableRow>
@@ -817,6 +820,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -862,6 +867,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -905,6 +912,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Giá tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Lý do trả hàng</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo yêu cầu</TableCell>
                                         </TableRow>
                                     </TableHead>

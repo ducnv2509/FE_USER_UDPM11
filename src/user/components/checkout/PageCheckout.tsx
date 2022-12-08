@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAuthStore } from "../../../hooks/zustand/auth";
@@ -9,6 +8,7 @@ import { Button, Section } from "../common";
 import PaymentMethods from "./payment-methods";
 import { getAmount } from "../../service/CheckoutService";
 import { IAmount } from "../../type/Payment";
+import React, {useEffect, useState} from "react";
 // import { getListBankAsync } from "../../features/payment/list-bank-slice";
 // import { getPaymentMethodsAsync } from "../../features/payment/payment-methods-slice";
 

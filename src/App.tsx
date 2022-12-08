@@ -34,16 +34,16 @@ const App: React.FC = () => {
           element: <HomePageUser />,
           children: [
             {
+              path: "shop",
+              element: <Shop />,
+            },
+            {
               path: "/",
               element: <Home />,
             },
             {
               path: "home-user",
               element: <Home />,
-            },
-            {
-              path: "shop",
-              element: <Shop />,
             },
             {
               path: "checkout",

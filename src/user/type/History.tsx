@@ -3,10 +3,12 @@
 export interface IHistory {
     key: React.Key;
     id: number,
+    code: string,
+    address_id: string,
     total_price: number,
     total_quantity: number;
     status: number;
-    type: number;
+    typePay: string;
     fee_money: number;
     created_time: string;
     totalPrice: number;
@@ -34,7 +36,7 @@ export interface IOrderItem {
 }
 export interface IOrderReturn {
     key: React.Key;
-    account_id: number ;
+    account_id: number;
     account_name: string;
     create_date: string;
     id: number;
@@ -47,11 +49,11 @@ export interface IOrderReturn {
 
 }
 export interface IOrderReturnItem {
-    image:string;
+    image: string;
     name: string;
-    optionProduct:string;
-    price:number;
-    quantity:number;
-    totalPrice:number
+    optionProduct: string;
+    price: number;
+    quantity: number;
+    totalPrice: number
 }
 
