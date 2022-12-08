@@ -54,6 +54,12 @@ const Header: React.FC = () => {
             });
     }, []);
 
+    // useEffect(() => {
+    //     set
+    // }, []);
+    useEffect(() => {
+        console.log(profile)
+    }, [profile]);
     useEffect(() => {
         cartItems.forEach((e) => {
             console.log(e.priceTotal)
@@ -71,7 +77,7 @@ const Header: React.FC = () => {
             console.log(err);
         })
     }
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleOpen = () => {
         clickShowProfile()
         setOpen(true)

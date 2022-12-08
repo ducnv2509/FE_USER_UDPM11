@@ -24,11 +24,12 @@ function Shop() {
         getAllProduct().then((r) => {
             console.log(r.data);
             setProducts(r.data.reverse());
-            const filterPriceAscU = r.data.sort((a: any, b: any) => (a.wholesale_price > b.wholesale_price) ? 1 : -1).map((e: any) => {
-                return e;
-            })
-            console.log(filterPriceAscU);
-            setFilterProduct(filterPriceAscU);
+            // const filterPriceAscU = r.data.sort((a: any, b: any) => (a.wholesale_price > b.wholesale_price) ? 1 : -1).map((e: any) => {
+            //     return e;
+            // })
+            // console.log(filterPriceAscU);
+            // setFilterProduct(filterPriceAscU);
+            setFilterProduct(r.data);
         });
         showAllCategory().then((r) => {
             setCategory(r.data)
@@ -50,6 +51,7 @@ function Shop() {
         console.log('Đặt hàng thành công');
     }
     const [page, setPage] = useState({ fist: 0, last: 10 });
+    const [sortFilterCurrent, setSortFilterCurrent] = useState('');
     const handleChange = (value: any) => {
         if (value <= 1) {
             setPage({
@@ -74,7 +76,7 @@ function Shop() {
             return e;
         })
         console.log(filterPriceAsc);
-
+        setSortFilterCurrent('asc')
         setFilterProduct(filterPriceAsc);
     }
 
@@ -82,15 +84,56 @@ function Shop() {
         const filterPriceDsc = products.sort((a, b) => (a.wholesale_price < b.wholesale_price) ? 1 : -1).map((e) => {
             return e;
         })
-        console.log(filterPriceDsc);
+        setSortFilterCurrent('desc')
         setFilterProduct(filterPriceDsc);
     }
 
     const filterCate = (id: number[]) => {
         filterByCategory(id).then((res) => {
             console.log(res.data);
+            if (sortFilterCurrent === 'asc') {
+                const filterPrice = res.data.sort((a: any, b: any) => (a.wholesale_price > b.wholesale_price) ? 1 : -1)
+                    .map((e: any) => { return e; })
+                console.log(filterPrice);
+                setFilterProduct(filterPrice);
+            } else if (sortFilterCurrent === 'desc') {
+                const filterPrice = res.data.sort((a: any, b: any) => (a.wholesale_price < b.wholesale_price) ? 1 : -1)
+                    .map((e: any) => { return e; })
+                console.log(filterPrice);
+                setFilterProduct(filterPrice);
+            }else{
+                setFilterProduct(res.data);
+            }
         })
     }
+
+    const [selected, setSelected] = React.useState<number[]>([]);
+    useEffect(() => {
+        if(selected.length !==0){
+            filterCate(selected)
+        }else{
+            setFilterProduct(products)
+        }
+    },[selected])
+    const handleClick = (id: number) => {
+        const selectedIndex = selected.indexOf((id));
+        let newSelected: number[] = [];
+
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, id);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1),
+            );
+        }
+        console.log(newSelected)
+        setSelected(newSelected);
+    };
 
     return (
         <div className="shop-container">
@@ -232,18 +275,19 @@ function Shop() {
 
 
                             <section className="widget widget-sizes mb-5">
-                                <h3 className="widget-title h4 mb-4">Mua sắm theo kích cỡ</h3>
+                                <h3 className="widget-title h4 mb-4">Danh mục</h3>
                                 <FormGroup>
-                                    {category.map((e) => {
+                                    {category.map((c) => {
                                         return (
                                             <>
                                                 <FormControlLabel
-                                                    value={e.id}
+                                                    value={c.id}
                                                     control={<Checkbox
                                                         onChange={(e) => {
                                                             console.log(e.target.value);
+                                                            handleClick(c.id)
                                                         }}
-                                                        defaultChecked />} label={e.name} />
+                                                        defaultChecked={false} />} label={c.name} />
 
                                             </>
                                         )
