@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllProduct } from "../service/HomePage";
 import { IHomePage } from "../type/HomePage";
-import { Pagination } from "antd";
+import { Button, Pagination } from "antd";
 
 function Home() {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
@@ -10,8 +10,6 @@ function Home() {
     const [page, setPage] = useState({ fist: 0, last: 10 });
     useEffect(() => {
         document.title = "Home Page"
-        console.log("adadasd");
-
         getAllProduct().then((r) => {
             setProducts(r.data);
             console.log(r.data.reverse());
@@ -45,14 +43,18 @@ function Home() {
                                 <div className="slider-caption">
                                     <span className="lead">Trang phục hợp thời trang</span>
                                     <h1 className="mt-2 mb-5"><span className="text-color">Winter </span>Collection</h1>
-                                    <a href="!#" className="btn btn-main">Mua ngay</a>
+
+                                    <Link to={{ pathname: `/shop/` }}>
+                                        <a className="btn btn-main">Mua ngay</a>
+                                        {/* <button>Mua ngay</button> */}
+                                    </Link>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <section className="category section pt-3 pb-0">
+            {/* <section className="category section pt-3 pb-0">
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-4 col-sm-12 col-md-6">
@@ -87,7 +89,7 @@ function Home() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
             <section className="section products-main">
                 <div className="container">
                     <div className="row justify-content-center">
@@ -122,10 +124,12 @@ function Home() {
                                                 </div>
 
                                                 <div className="product-info">
-                                                    <h2 className="product-title h5 mb-0"><a href="!#">{p.name}</a></h2>
-                                                    <span className="price">
-                                                        {new Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
-                                                    </span>
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        <h2 className="product-title h5 mb-0"><a href="!#">{p.name}</a></h2>
+                                                        <span className="price">
+                                                            {new Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
+                                                        </span>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
@@ -153,7 +157,10 @@ function Home() {
                                 <p className="text-md mt-3 text-white">Nhanh lên! Ưu đãi trong thời gian có hạn.</p>
 
                                 <div id="simple-timer" className="syotimer mb-5"></div>
-                                <a href="!#" className="btn btn-main"><i className="ti-bag mr-2"></i>Mua ngay </a>
+                                <Link to={{ pathname: `/shop/` }}>
+                                    <a className="btn btn-main">Mua ngay</a>
+                                    {/* <button>Mua ngay</button> */}
+                                </Link>
                             </div>
                         </div>
                     </div>

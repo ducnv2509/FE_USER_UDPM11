@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteCart, updateQuantityCart } from "../service/HistoryOrder";
 import Swal from 'sweetalert2';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 const Cart = () => {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
 
@@ -184,7 +184,7 @@ const Cart = () => {
             renderCell: (params) => {
                 return (
                     <>
-                        {params.value}
+                    {new Intl.NumberFormat('vi-VN', config).format(params.value)}
                     </>
                 );
             }

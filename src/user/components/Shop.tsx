@@ -1,11 +1,18 @@
+import { Autocomplete, Checkbox, FormControl, FormControlLabel, FormGroup, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Box } from "@mui/system";
+import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllProduct } from "../service/HomePage";
-import { IHomePage } from "../type/HomePage";
+import { addOrderPush } from "../service/CheckoutService";
+import { filterByCategory, getAllProduct, showAllCategory } from "../service/HomePage";
+import { ICategory, IHomePage } from "../type/HomePage";
+import { Toast } from "./OrderHistory";
 
 function Shop() {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const [products, setProducts] = useState([{} as IHomePage]);
+    const [filterProduct, setFilterProduct] = useState([{} as IHomePage]);
+    const [category, setCategory] = useState([{} as ICategory]);
 
     useEffect(() => {
         document.title = "All Product"
@@ -15,25 +22,118 @@ function Shop() {
     useEffect(() => {
         // setTimeout(() => {
         getAllProduct().then((r) => {
+            console.log(r.data);
             setProducts(r.data.reverse());
+            // const filterPriceAscU = r.data.sort((a: any, b: any) => (a.wholesale_price > b.wholesale_price) ? 1 : -1).map((e: any) => {
+            //     return e;
+            // })
+            // console.log(filterPriceAscU);
+            // setFilterProduct(filterPriceAscU);
+            setFilterProduct(r.data);
         });
+        showAllCategory().then((r) => {
+            setCategory(r.data)
+        })
     }, []);
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    console.log("url", urlParams.get('transCode'));
+    if (urlParams.get('code') == '0' && urlParams.get('transCode')?.startsWith('PAY-') != undefined) {
+        let objPay = JSON.parse(localStorage.getItem('objPayment') || '{}');
+        addOrderPush(objPay.address, objPay.note, objPay.cart_items, objPay.shipMoney, objPay.accessToken, objPay.typePay).then((res) => {
+            localStorage.removeItem('objPayment')
+            localStorage.removeItem('listItem')
+            Toast.fire('success', 'Đặt hàng thành công')
+            console.log(res);
+        }, (err) => {
+            console.log(err);
+        })
+        console.log('Đặt hàng thành công');
+    }
+    const [page, setPage] = useState({ fist: 0, last: 10 });
+    const [sortFilterCurrent, setSortFilterCurrent] = useState('');
+    const handleChange = (value: any) => {
+        if (value <= 1) {
+            setPage({
+                fist: 0,
+                last: 9
+            });
+        } else if (value * 10 > products.length) {
+            setPage({
+                fist: (value * 10) - 10,
+                last: products.length
+            });
+        } else {
+            setPage({
+                fist: (value * 10) - 10,
+                last: value * 10
+            });
+        }
+    };
 
+    const sortFilterASC = () => {
+        const filterPriceAsc = products.sort((a, b) => (a.wholesale_price > b.wholesale_price) ? 1 : -1).map((e) => {
+            return e;
+        })
+        console.log(filterPriceAsc);
+        setSortFilterCurrent('asc')
+        setFilterProduct(filterPriceAsc);
+    }
 
+    const sortFilterDSC = () => {
+        const filterPriceDsc = products.sort((a, b) => (a.wholesale_price < b.wholesale_price) ? 1 : -1).map((e) => {
+            return e;
+        })
+        setSortFilterCurrent('desc')
+        setFilterProduct(filterPriceDsc);
+    }
 
-    // // calling loafding soucreser
+    const filterCate = (id: number[]) => {
+        filterByCategory(id).then((res) => {
+            console.log(res.data);
+            if (sortFilterCurrent === 'asc') {
+                const filterPrice = res.data.sort((a: any, b: any) => (a.wholesale_price > b.wholesale_price) ? 1 : -1)
+                    .map((e: any) => { return e; })
+                console.log(filterPrice);
+                setFilterProduct(filterPrice);
+            } else if (sortFilterCurrent === 'desc') {
+                const filterPrice = res.data.sort((a: any, b: any) => (a.wholesale_price < b.wholesale_price) ? 1 : -1)
+                    .map((e: any) => { return e; })
+                console.log(filterPrice);
+                setFilterProduct(filterPrice);
+            }else{
+                setFilterProduct(res.data);
+            }
+        })
+    }
 
-    // useEffect(() => {
-    //     getAllCoursesFromServer();
-    // }, []);
+    const [selected, setSelected] = React.useState<number[]>([]);
+    useEffect(() => {
+        if(selected.length !==0){
+            filterCate(selected)
+        }else{
+            setFilterProduct(products)
+        }
+    },[selected])
+    const handleClick = (id: number) => {
+        const selectedIndex = selected.indexOf((id));
+        let newSelected: number[] = [];
 
-
-
-    // console.log(products[0].name);
-
-    // const updateCourses = (id) => {
-    //     setCourses(courses.filter((c) => c.id != id))
-    // }
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, id);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1),
+            );
+        }
+        console.log(newSelected)
+        setSelected(newSelected);
+    };
 
     return (
         <div className="shop-container">
@@ -67,71 +167,66 @@ function Shop() {
 
                                         <div className="heading d-flex justify-content-between mb-5">
                                             <p className="result-count mb-0">Hiển thị 1–6 trong số 17 kết quả</p>
-                                            <form className="ordering " method="get">
-                                                <select name="orderby" className="orderby form-control" aria-label="Shop order" >
-                                                    <option value="" selected>Mặc định phân loại</option>
-                                                    <option value="">Sắp xếp theo mức độ phổ biến</option>
-                                                    <option value="">Sắp xếp theo xếp hạng trung bình</option>
-                                                    <option value="">Sắp xếp theo mới nhất</option>
-                                                    <option value="">Sắp xếp theo giá: thấp đến cao</option>
-                                                    <option value="">Sắp xếp theo giá: cao đến thấp</option>
-                                                </select>
-                                                <input type="hidden" name="paged" value="1" />
-                                            </form>
+                                            <Box sx={{ minWidth: 120 }}>
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="demo-simple-select-label">Giá</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        label="Giá"
+                                                        onChange={
+                                                            (e) => {
+                                                                if (e.target.value == 10) {
+                                                                    sortFilterDSC()
+                                                                } else {
+                                                                    sortFilterASC()
+                                                                }
+                                                            }
+                                                        }
+                                                    >
+                                                        <MenuItem value={20}>Từ thấp đến cao</MenuItem>
+                                                        <MenuItem value={10}>Từ cao đến thấp</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </Box>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="row">
-                                {products.map(p =>
-                                    <div key={p.id} className="col-lg-4 col-12 col-md-6 col-sm-6 mb-5" >
-                                        <div className="product">
-                                            <div className="product-wrap">
-                                                <Link to={{ pathname: `/single-product/${p.id}` }}>
-                                                    <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
-                                                    <img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" />
-                                                </Link>
-                                            </div>
+                                {filterProduct && filterProduct.length > 0 &&
+                                    filterProduct.slice(page.fist, page.last).map(p =>
+                                        <div key={p.id} className="col-lg-4 col-12 col-md-6 col-sm-6 mb-5" >
+                                            <div className="product">
+                                                <div className="product-wrap">
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
+                                                        <img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" />
+                                                    </Link>
+                                                </div>
 
-                                            <span className="onsale">Sale</span>
-                                            <div className="product-hover-overlay">
-                                                <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                                <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                            </div>
-
-                                            <div className="product-info">
-                                                <Link to={{ pathname: `/single-product/${p.id}` }}>
-                                                    {/* <h2 className="product-title h5 mb-0"><a href="/product-single">{p.name}</a></h2> */}
-                                                    <h2 className="product-title h5 mb-0">{p.name}</h2>
-                                                </Link>
-                                                <span className="price">
-                                                    {new Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
-                                                </span>
+                                                <div className="product-info">
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        {/* <h2 className="product-title h5 mb-0"><a href="/product-single">{p.name}</a></h2> */}
+                                                        <h2 className="product-title h5 mb-0">{p.name}</h2>
+                                                    </Link>
+                                                    <span className="price">
+                                                        {new Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                )}
+                                    )}
 
                                 <div className="col-12">
-                                    <nav aria-label="Page navigation">
-                                        <ul className="pagination">
-                                            <li className="page-item">
-                                                <a className="page-link" href="!#" aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </a>
-                                            </li>
-                                            <li className="page-item active"><a className="page-link" href="!#">1</a></li>
-                                            <li className="page-item"><a className="page-link" href="!#">2</a></li>
-                                            <li className="page-item"><a className="page-link" href="!#">3</a></li>
-                                            <li className="page-item">
-                                                <a className="page-link" href="!#" aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                    <Pagination
+                                        defaultCurrent={1}
+                                        defaultPageSize={10}
+                                        onChange={handleChange}
+                                        total={products.length}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -140,11 +235,9 @@ function Shop() {
 
 
 
-                            <form className="mb-5">
+                            {/* <form className="mb-5"> */}
 
-
-
-                                <section className="widget widget-colors mb-5">
+                            {/* <section className="widget widget-colors mb-5">
                                     <h3 className="widget-title h4 mb-4">Mua sắm theo màu</h3>
                                     <ul className="list-inline">
                                         <li className="list-inline-item mr-4">
@@ -178,35 +271,52 @@ function Shop() {
                                             </div>
                                         </li>
                                     </ul>
-                                </section>
+                                </section> */}
 
 
-                                <section className="widget widget-sizes mb-5">
-                                    <h3 className="widget-title h4 mb-4">Mua sắm theo kích cỡ</h3>
-                                    <div className="custom-control custom-checkbox">
-                                        <input type="checkbox" className="custom-control-input" id="size1" checked />
-                                        <label className="custom-control-label" htmlFor="size1">L Lớn</label>
-                                    </div>
-                                    <div className="custom-control custom-checkbox">
-                                        <input type="checkbox" className="custom-control-input" id="size2" />
-                                        <label className="custom-control-label" htmlFor="size2">XL Cực lớn</label>
-                                    </div>
-                                    <div className="custom-control custom-checkbox">
-                                        <input type="checkbox" className="custom-control-input" id="size3" />
-                                        <label className="custom-control-label" htmlFor="size3">M Vừa phải</label>
-                                    </div>
-                                    <div className="custom-control custom-checkbox">
-                                        <input type="checkbox" className="custom-control-input" id="size4" />
-                                        <label className="custom-control-label" htmlFor="size4">S Nhỏ bé</label>
-                                    </div>
-                                    <div className="custom-control custom-checkbox">
-                                        <input type="checkbox" className="custom-control-input" id="size5" />
-                                        <label className="custom-control-label" htmlFor="size5">XS Rất nhỏ</label>
-                                    </div>
-                                </section>
+                            <section className="widget widget-sizes mb-5">
+                                <h3 className="widget-title h4 mb-4">Danh mục</h3>
+                                <FormGroup>
+                                    {category.map((c) => {
+                                        return (
+                                            <>
+                                                <FormControlLabel
+                                                    value={c.id}
+                                                    control={<Checkbox
+                                                        onChange={(e) => {
+                                                            console.log(e.target.value);
+                                                            handleClick(c.id)
+                                                        }}
+                                                        defaultChecked={false} />} label={c.name} />
 
-                                <button type="button" className="btn btn-black btn-small">Lọc</button>
-                            </form>
+                                            </>
+                                        )
+                                    })}
+                                </FormGroup>
+                                {/* <div className="custom-control custom-checkbox">
+                                    <input type="checkbox" className="custom-control-input" id="size1" checked />
+                                    <label className="custom-control-label" htmlFor="size1">L Lớn</label>
+                                </div>
+                                <div className="custom-control custom-checkbox">
+                                    <input type="checkbox" className="custom-control-input" id="size2" />
+                                    <label className="custom-control-label" htmlFor="size2">XL Cực lớn</label>
+                                </div>
+                                <div className="custom-control custom-checkbox">
+                                    <input type="checkbox" className="custom-control-input" id="size3" />
+                                    <label className="custom-control-label" htmlFor="size3">M Vừa phải</label>
+                                </div>
+                                <div className="custom-control custom-checkbox">
+                                    <input type="checkbox" className="custom-control-input" id="size4" />
+                                    <label className="custom-control-label" htmlFor="size4">S Nhỏ bé</label>
+                                </div>
+                                <div className="custom-control custom-checkbox">
+                                    <input type="checkbox" className="custom-control-input" id="size5" />
+                                    <label className="custom-control-label" htmlFor="size5">XS Rất nhỏ</label>
+                                </div> */}
+                            </section>
+
+                            {/* <button type="button" className="btn btn-black btn-small">Lọc</button> */}
+                            {/* </form> */}
 
 
                             <section className="widget widget-popular mb-5">

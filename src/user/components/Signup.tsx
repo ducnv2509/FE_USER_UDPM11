@@ -81,13 +81,13 @@ function SignUp() {
                                     </div>
                                     <div className="form-group mb-4">
                                         <label htmlFor="#">Enter Password</label>
-                                        <input type="text" className="form-control" placeholder="Enter Password"
+                                        <input type="password" className="form-control" placeholder="Enter Password"
                                             {...register('password')} required
                                         />
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="#">Confirm Password</label>
-                                        <input type="text" className="form-control" placeholder="Confirm Password" />
+                                        <input type="password" className="form-control" placeholder="Confirm Password" />
                                     </div>
                                     <input type="submit" className="btn btn-main mt-3 btn-block" value="Register" />
                                 </form>

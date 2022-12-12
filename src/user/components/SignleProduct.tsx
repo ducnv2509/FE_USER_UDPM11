@@ -79,10 +79,11 @@ function SingleProduct() {
                 title: 'Thêm vào giỏ thành công '
             })
         }, (err) => {
-            console.log(err)
+            navigate("/login")
+            // console.log(err)
             Toast.fire({
-                icon: 'error',
-                title: err.response.data.description
+                icon: 'success',
+                title: 'Hãy đăng nhập'
             })
         })
     }

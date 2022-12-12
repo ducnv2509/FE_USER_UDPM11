@@ -98,16 +98,31 @@ function Checkout() {
         })
     }, [hy, xa, tp])
 
+    // (nameXa + ' ' + nameHy + ' ' + nameTP), 'comming', id_cart_it_main, moneyFeeShip.total, accessToken, 1
 
+    let objPayment = {
+        address: (nameXa + ' ' + nameHy + ' ' + nameTP),
+        note: 'comming',
+        cart_items: id_cart_it_main,
+        shipMoney: moneyFeeShip.total,
+        accessToken,
+        typePay: 1,
+        totalPrice
+    }
+
+    const [typePay, setTypePay] = useState(1)
     const navigate = useNavigate();
     const addOrder123 = () => {
-        console.log('OKOKOOKk' + (nameXa + ' ' + nameHy + ' ' + nameTP) + 'comming' + id_cart_it_main + moneyFeeShip.total + accessToken)
-        addOrderPush((nameXa + ' ' + nameHy + ' ' + nameTP), 'comming', id_cart_it_main, moneyFeeShip.total, accessToken).then((res) => {
-            console.log('12313123123' + res)
+        if (typePay == 1) {
+            localStorage.setItem('objPayment', JSON.stringify(objPayment))
             navigate("/page-checkout")
-        }, (err) => {
-            console.log(err)
-        })
+        } else {
+            addOrderPush((nameXa + ' ' + nameHy + ' ' + nameTP), 'comming', id_cart_it_main, moneyFeeShip.total, accessToken, 2).then((res) => {
+                navigate("/history")
+            }, (err) => {
+                console.log(err)
+            })
+        }
     }
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
 
@@ -297,7 +312,7 @@ function Checkout() {
 
                                     <ul className="summary-prices list-unstyled mb-4">
                                         <li className="d-flex justify-content-between">
-                                            <span >Tổng phụ:</span>
+                                            <span >Tổng phụ:</span>totalPrice
                                             <span className="h5">
                                                 {format(totalPrice)}
                                             </span>
@@ -318,7 +333,15 @@ function Checkout() {
 
                                     <form action="#">
                                         <div className="form-check mb-3">
-                                            <input className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked />
+                                            <input className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1"
+                                                onChange={
+                                                    () => {
+                                                        setTypePay(1)
+                                                    }
+                                                }
+                                                value="Payment"
+
+                                                checked />
                                             <label className="form-check-label" htmlFor="exampleRadios1">
                                                 Chuyển khoản trực tiếp
                                             </label>
@@ -329,15 +352,20 @@ function Checkout() {
                                         </div>
 
                                         <div className="form-check mb-3">
-                                            <input className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2" />
+                                            <input className="form-check-input" type="radio" name="exampleRadios"
+                                                onChange={
+                                                    () => {
+                                                        setTypePay(2)
+                                                    }
+                                                }
+                                                id="exampleRadios2" value="COD" />
                                             <label className="form-check-label" htmlFor="exampleRadios2">
-                                                Kiểm tra các khoản thanh toán
+                                                COD
                                             </label>
                                         </div>
 
                                         <div className="form-check mb-3">
-                                            <input type="checkbox" className="form-check-input" id="exampleCheck3" />
-                                            <label className="form-check-label" htmlFor="exampleCheck3">Tôi đã đọc và đồng ý với các điều khoản và điều kiện của trang web *</label>
+                                            <label className="form-check-label" htmlFor="exampleCheck3">Đặt hàng đồng nghĩa với việc đồng ý với các chính sách của shop.</label>
                                         </div>
                                     </form>
 
