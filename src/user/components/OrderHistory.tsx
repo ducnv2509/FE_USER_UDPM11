@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Button, Tabs, Checkbox, TextField, Autocomplete, } from "@mui/material";
+import { Button, Tabs, Checkbox, TextField, Autocomplete, TextareaAutosize, } from "@mui/material";
 import Tab from '@mui/material/Tab';
 import ButtonJoy from '@mui/joy/Button';
 import Divider from '@mui/joy/Divider';
@@ -29,6 +29,7 @@ import TypographyJoy from '@mui/joy/Typography';
 import moment from "moment";
 import { Input } from 'antd';
 import Swal from "sweetalert2";
+import { Stack } from "@mui/system";
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
@@ -83,16 +84,18 @@ const OrderHistory2 = () => {
     const [currentStatus, setCurrentStatus] = React.useState(5);
     const [openModal, setOpenModal] = React.useState(0);
     const [openModalReturn, setOpenModalReturn] = React.useState(0);
-    const [note, setNote] = useState({ note_txt: '' });
+    const [note, setNote] = useState('');
     const [word, setWord] = useState('');
     const [selected, setSelected] = React.useState<IOrderItem[]>([]);
 
     function handleInputOnchange(e: any) {
-        const { value } = e.target;
-        console.log(value);
-
-        setNote(value);
+        setNote(e);
     }
+
+    useEffect(() => {
+        console.log(note);
+
+    }, [note])
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         console.log(newValue)
         if (newValue === 0) {
@@ -152,7 +155,7 @@ const OrderHistory2 = () => {
             idOrderItem.push(e.id)
         })
         console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
-        returnOrder('Lỗi hàng', idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
+        returnOrder(note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
             console.log(res.data)
             onClickHistory(8)
             Toast.fire({
@@ -513,10 +516,40 @@ const OrderHistory2 = () => {
                                                 </TableRow>
                                             ))}
                                         </TableBody>
+
                                     </Table>
-                                    {/* <label htmlFor="">Lý do trả hàng:</label>
+                                    <label htmlFor="">Lý do trả hàng:</label>
                                     <>
-                                        <Autocomplete
+                                        <TextField id="standard-basic"
+                                            onChange={
+                                                (e) => {
+                                                    handleInputOnchange(e.target.value)
+                                                }
+                                            }
+                                            // onChange={(e) => {
+                                            //     // console.log(profile)
+
+                                            // }}
+                                            value={note}
+                                            label="Lý do trả hàng" variant="standard"
+
+                                        />
+                                        {/* <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            id="name"
+                                            label="Magnet Link"
+                                            type="text"
+                                            placeholder="Enter Magnet Link Here"
+                                            fullWidth
+                                            inputRef={$el => {
+                                                //you got the input value here
+                                                const inputValue = $el.value
+                                                console.log(inputValue);
+
+                                            }}
+                                        /> */}
+                                        {/* <Autocomplete
                                             disablePortal
                                             id="combo-box-demo"
                                             options={top100Films}
@@ -524,8 +557,8 @@ const OrderHistory2 = () => {
                                             renderInput={(params) => <TextField {...params}
                                                 onChange={(e) => setNote(prev => ({ ...prev, note_txt: e.target.value }))}
                                                 label="Movie" />}
-                                        />
-                                    </> */}
+                                        /> */}
+                                    </>
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
