@@ -88,14 +88,6 @@ const OrderHistory2 = () => {
     const [word, setWord] = useState('');
     const [selected, setSelected] = React.useState<IOrderItem[]>([]);
 
-    function handleInputOnchange(e: any) {
-        setNote(e);
-    }
-
-    useEffect(() => {
-        console.log(note);
-
-    }, [note])
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         console.log(newValue)
         if (newValue === 0) {
@@ -203,8 +195,6 @@ const OrderHistory2 = () => {
         ));
     }, [historyReturn])
 
-
-
     const onClickHistory = (status_id: number) => {
         setPage(0);
         setLoading(true)
@@ -289,6 +279,7 @@ const OrderHistory2 = () => {
             })
         ));
     }, [history])
+
     function checkDate(date_start: Date) {
         console.log(date_start);
         let date_now = new Date().getTime();
@@ -304,6 +295,16 @@ const OrderHistory2 = () => {
             return false
         }
     }
+
+    // Log gia tri tra ra
+    console.log(note);
+
+    function something({value}: { value: any }) {
+        // setNote(value)
+        console.log(JSON.stringify(value))
+        // setNote(() => JSON.stringify(value));
+    }
+
     function Row(props: { row: IHistory }) {
         const { row } = props;
         const [open, setOpen] = React.useState(false);
@@ -520,20 +521,6 @@ const OrderHistory2 = () => {
                                     </Table>
                                     <label htmlFor="">Lý do trả hàng:</label>
                                     <>
-                                        <TextField id="standard-basic"
-                                            onChange={
-                                                (e) => {
-                                                    handleInputOnchange(e.target.value)
-                                                }
-                                            }
-                                            // onChange={(e) => {
-                                            //     // console.log(profile)
-
-                                            // }}
-                                            value={note}
-                                            label="Lý do trả hàng" variant="standard"
-
-                                        />
                                         {/* <TextField
                                             autoFocus
                                             margin="dense"
@@ -559,6 +546,17 @@ const OrderHistory2 = () => {
                                                 label="Movie" />}
                                         /> */}
                                     </>
+                                   <div>
+                                       <TextareaAutosize
+                                           aria-label="empty textarea"
+                                           placeholder="Lý do trả hàng"
+                                           style={{ width: 700, height: 100 }}
+                                           // defaultValue = {note}
+                                           onChange={(e) => {
+                                               something({value: e.target.value});
+                                           }}
+                                       />
+                                   </div>
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
@@ -569,6 +567,7 @@ const OrderHistory2 = () => {
                                     </Button>
                                 </Box>
                             </ModalJoyDialog>
+
                         </ModalJoy>
                     </TableCell>
                 </TableRow>
