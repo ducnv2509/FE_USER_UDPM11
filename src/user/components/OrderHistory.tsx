@@ -297,13 +297,18 @@ const OrderHistory2 = () => {
     }
 
     // Log gia tri tra ra
-    console.log(note);
 
-    function something({value}: { value: any }) {
+    let note_string: string;
+    function something({ value }: { value: any }) {
         // setNote(value)
+        note_string = value;
         console.log(JSON.stringify(value))
         // setNote(() => JSON.stringify(value));
+        // console.log('note_string', note_string);
+        setNote(note_string)
     }
+
+
 
     function Row(props: { row: IHistory }) {
         const { row } = props;
@@ -546,23 +551,27 @@ const OrderHistory2 = () => {
                                                 label="Movie" />}
                                         /> */}
                                     </>
-                                   <div>
-                                       <TextareaAutosize
-                                           aria-label="empty textarea"
-                                           placeholder="Lý do trả hàng"
-                                           style={{ width: 700, height: 100 }}
-                                           // defaultValue = {note}
-                                           onChange={(e) => {
-                                               something({value: e.target.value});
-                                           }}
-                                       />
-                                   </div>
+                                    <div>
+                                        <TextareaAutosize
+                                            aria-label="empty textarea"
+                                            placeholder="Lý do trả hàng"
+                                            style={{ width: 700, height: 100 }}
+                                            // defaultValue = {note}
+                                            onChange={(e) => {
+                                                something({ value: e.target.value });
+                                            }}
+                                        />
+                                    </div>
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
                                         Quay Lại
                                     </ButtonJoy>
-                                    <Button variant="text" disabled={!hasSelected} color="error" type="submit" onClick={() => { returnOrderbyIdOrder(row.id); setOpenModalReturn(0) }}>
+                                    <Button variant="text" disabled={!hasSelected} color="error" type="submit" onClick={() => {
+                                        console.log('note_string', note_string);
+                                        // returnOrderbyIdOrder(row.id); 
+                                        setOpenModalReturn(0)
+                                    }}>
                                         Trả hàng
                                     </Button>
                                 </Box>
