@@ -84,7 +84,6 @@ const OrderHistory2 = () => {
     const [currentStatus, setCurrentStatus] = React.useState(5);
     const [openModal, setOpenModal] = React.useState(0);
     const [openModalReturn, setOpenModalReturn] = React.useState(0);
-    const [note, setNote] = useState('');
     const [word, setWord] = useState('');
     const [selected, setSelected] = React.useState<IOrderItem[]>([]);
 
@@ -137,31 +136,7 @@ const OrderHistory2 = () => {
         console.log(newSelected)
         setSelected(newSelected);
     };
-    const returnOrderbyIdOrder = (idOrder: number) => {
-        let totalQuantityReturn: number = 0;
-        let totalPriceReturn: number = 0;
-        let idOrderItem: number[] = [];
-        selected.map((e) => {
-            totalQuantityReturn += e.quantity
-            totalPriceReturn += e.total_price
-            idOrderItem.push(e.id)
-        })
-        console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
-        returnOrder(note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
-            console.log(res.data)
-            onClickHistory(8)
-            Toast.fire({
-                icon: 'success',
-                title: 'Yêu cầu thành công'
-            })
-        }, (err) => {
-            console.log(err);
-            Toast.fire({
-                icon: 'error',
-                title: 'Yêu cầu thất bại'
-            })
-        })
-    };
+
     const isSelected = (orderItem: IOrderItem) => selected.indexOf(orderItem) !== -1;
     const hasSelected = selected.length > 0;
     // let item : IOrderItem;
@@ -281,7 +256,7 @@ const OrderHistory2 = () => {
     }, [history])
 
     function checkDate(date_start: Date) {
-        console.log(date_start);
+        //console.log(date_start);
         let date_now = new Date().getTime();
         let date_compare = new Date(date_start).getTime();
         const startDate = moment(date_now);
@@ -296,23 +271,41 @@ const OrderHistory2 = () => {
         }
     }
 
-    // Log gia tri tra ra
-
-    let note_string: string;
-    function something({ value }: { value: any }) {
-        // setNote(value)
-        note_string = value;
-        console.log(JSON.stringify(value))
-        // setNote(() => JSON.stringify(value));
-        // console.log('note_string', note_string);
-        setNote(note_string)
-    }
-
-
-
     function Row(props: { row: IHistory }) {
         const { row } = props;
         const [open, setOpen] = React.useState(false);
+        // ghi chu Kh sao khi hoan tra
+        const [note, setNote] = useState('');
+
+        // Khach hang hoan tra hang
+        const returnOrderbyIdOrder = (idOrder: number) => {
+            let totalQuantityReturn: number = 0;
+            let totalPriceReturn: number = 0;
+            let idOrderItem: number[] = [];
+            selected.map((e) => {
+                totalQuantityReturn += e.quantity
+                totalPriceReturn += e.total_price
+                idOrderItem.push(e.id)
+            })
+            console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
+            returnOrder(note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
+                console.log(res.data)
+                onClickHistory(8)
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Yêu cầu thành công'
+                })
+            }, (err) => {
+                console.log(err);
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Yêu cầu thất bại'
+                })
+            })
+        };
+
+        // Log ghi chu KH tra hang
+        console.log(note);
         return (
             <React.Fragment>
                 <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} hover>
@@ -551,24 +544,22 @@ const OrderHistory2 = () => {
                                                 label="Movie" />}
                                         /> */}
                                     </>
-                                    <div>
-                                        <TextareaAutosize
-                                            aria-label="empty textarea"
-                                            placeholder="Lý do trả hàng"
-                                            style={{ width: 700, height: 100 }}
-                                            // defaultValue = {note}
-                                            onChange={(e) => {
-                                                something({ value: e.target.value });
-                                            }}
-                                        />
-                                    </div>
+                                   <div>
+                                       <TextareaAutosize
+                                           aria-label="empty textarea"
+                                           placeholder="Lý do trả hàng"
+                                           style={{ width: 700, height: 100 }}
+                                           value = {note}
+                                           onChange={e => setNote( e.target.value)}
+                                       />
+                                   </div>
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
                                         Quay Lại
                                     </ButtonJoy>
                                     <Button variant="text" disabled={!hasSelected} color="error" type="submit" onClick={() => {
-                                        console.log('note_string', note_string);
+                                        // console.log('note_string', note_string);
                                         // returnOrderbyIdOrder(row.id); 
                                         setOpenModalReturn(0)
                                     }}>
