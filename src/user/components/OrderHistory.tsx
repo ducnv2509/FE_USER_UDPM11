@@ -16,6 +16,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Button, Tabs, Checkbox, TextField, Autocomplete, TextareaAutosize, } from "@mui/material";
@@ -108,37 +111,7 @@ const OrderHistory2 = () => {
         setCurrentStatus(value_new);
     };
 
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>, rows: IOrderItem[]) => {
-        if (event.target.checked) {
-            const newSelected = rows;
-            setSelected(newSelected);
-            return;
-        }
-        setSelected([]);
-    };
 
-    const handleClick = (event: React.MouseEvent<unknown>, orderItem: IOrderItem) => {
-        const selectedIndex = selected.indexOf(orderItem);
-        let newSelected: IOrderItem[] = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, orderItem);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-        console.log(newSelected)
-        setSelected(newSelected);
-    };
-
-    const isSelected = (orderItem: IOrderItem) => selected.indexOf(orderItem) !== -1;
-    const hasSelected = selected.length > 0;
     // let item : IOrderItem;
     const [history, setHistory] = useState([] as IHistory[]);
     const [historyReturn, setHistoryReturn] = useState([] as IOrderReturn[]);
@@ -178,13 +151,20 @@ const OrderHistory2 = () => {
             getHistoryOrder(status_id, accessToken).then((res: any) => {
                 setLoading(false)
                 resResult = res.data.map((obj: IHistory) => ({ ...obj, order_item: [] }))
+                console.log(res);
+                console.log('10', resResult);
+
+                getHistoryOrder(11, accessToken).then((res: any) => {
+                    setLoading(false)
+                    const newResult = res.data.map((obj: IHistory) => ({ ...obj, order_item: [] }))
+                    resResult.concat(newResult)
+                })
+                console.log(resResult);
+
+                setHistory(resResult)
             })
-            getHistoryOrder(11, accessToken).then((res: any) => {
-                setLoading(false)
-                const newResult = res.data.map((obj: IHistory) => ({ ...obj, order_item: [] }))
-                resResult.concat(newResult)
-            })
-            setHistory(resResult)
+
+
         } else if (status_id === 12) {
             getHistoryOrderReturn(accessToken).then((res: any) => {
                 setLoading(false)
@@ -272,8 +252,50 @@ const OrderHistory2 = () => {
     }
 
     function Row(props: { row: IHistory }) {
+        const steps = [
+            'Chờ xác nhận',
+            'Chờ lấy hàng',
+            'Đang giao hàng',
+            'Đã Nhận hàng',
+        ];
+
+        const stepsCancel = [
+            'Chờ xác nhận',
+            'Đã huỷ',
+        ];
         const { row } = props;
         const [open, setOpen] = React.useState(false);
+        const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>, rows: IOrderItem[]) => {
+            if (event.target.checked) {
+                const newSelected = rows;
+                setSelected(newSelected);
+                return;
+            }
+            setSelected([]);
+        };
+
+        const handleClick = (event: React.MouseEvent<unknown>, orderItem: IOrderItem) => {
+            const selectedIndex = selected.indexOf(orderItem);
+            let newSelected: IOrderItem[] = [];
+
+            if (selectedIndex === -1) {
+                newSelected = newSelected.concat(selected, orderItem);
+            } else if (selectedIndex === 0) {
+                newSelected = newSelected.concat(selected.slice(1));
+            } else if (selectedIndex === selected.length - 1) {
+                newSelected = newSelected.concat(selected.slice(0, -1));
+            } else if (selectedIndex > 0) {
+                newSelected = newSelected.concat(
+                    selected.slice(0, selectedIndex),
+                    selected.slice(selectedIndex + 1),
+                );
+            }
+            console.log(newSelected)
+            setSelected(newSelected);
+        };
+
+        const isSelected = (orderItem: IOrderItem) => selected.indexOf(orderItem) !== -1;
+        const hasSelected = selected.length > 0;
         // ghi chu Kh sao khi hoan tra
         const [note, setNote] = useState('');
 
@@ -382,14 +404,35 @@ const OrderHistory2 = () => {
                     </TableCell>
 
                 </TableRow>
-                <TableRow>
-                    <TableCell style={{ padding: 0, paddingTop: 0 }} colSpan={8}>
+                <TableRow >
+                    <TableCell style={{ padding: 0, paddingTop: 0 }} colSpan={10}>
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1, alignContent: "center" }}>
                                 <Typography variant="h6" gutterBottom component="div">
-                                    Chi tiết
+                                    Chi tiết:
                                 </Typography>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status === 10 || row.status === 11)}>
+                                    <Stepper activeStep={2} alternativeLabel>
+                                        {stepsCancel.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                                <Box sx={{ width: '100%' }} hidden={row.status === 10 || row.status === 11}>
+                                    <Stepper activeStep={((row.status - 5)==3)?4:(row.status - 5)} alternativeLabel>
+                                        {steps.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+
+                                <br />
                                 <div>Địa chỉ nhận :  {row.address_id}</div>
+                                <br />
                                 <Table size="small" aria-label="purchases" >
                                     <TableHead>
                                         <TableRow>
@@ -404,7 +447,6 @@ const OrderHistory2 = () => {
                                         {row.order_item?.map((order_item) => (
                                             <TableRow key={order_item.id}>
                                                 <TableCell align="left" width={100}>
-                                                    {/* <Avatar src={order_item.image} /> */}
                                                     <img src={order_item.image} width={100} />
                                                 </TableCell>
                                                 <TableCell align="left" component="th" scope="row" >
@@ -475,7 +517,7 @@ const OrderHistory2 = () => {
                                                         checked={row.order_item.length === selected.length}
                                                         onChange={(e) => handleSelectAllClick(e, row.order_item)}
                                                         inputProps={{
-                                                            'aria-label': 'select all desserts',
+                                                            'aria-label': 'select all',
                                                         }}
                                                     />
                                                 </TableCell>
@@ -518,41 +560,15 @@ const OrderHistory2 = () => {
 
                                     </Table>
                                     <label htmlFor="">Lý do trả hàng:</label>
-                                    <>
-                                        {/* <TextField
-                                            autoFocus
-                                            margin="dense"
-                                            id="name"
-                                            label="Magnet Link"
-                                            type="text"
-                                            placeholder="Enter Magnet Link Here"
-                                            fullWidth
-                                            inputRef={$el => {
-                                                //you got the input value here
-                                                const inputValue = $el.value
-                                                console.log(inputValue);
-
-                                            }}
-                                        /> */}
-                                        {/* <Autocomplete
-                                            disablePortal
-                                            id="combo-box-demo"
-                                            options={top100Films}
-                                            sx={{ width: 300 }}
-                                            renderInput={(params) => <TextField {...params}
-                                                onChange={(e) => setNote(prev => ({ ...prev, note_txt: e.target.value }))}
-                                                label="Movie" />}
-                                        /> */}
-                                    </>
-                                   <div>
-                                       <TextareaAutosize
-                                           aria-label="empty textarea"
-                                           placeholder="Lý do trả hàng"
-                                           style={{ width: 700, height: 100 }}
-                                           value = {note}
-                                           onChange={e => setNote( e.target.value)}
-                                       />
-                                   </div>
+                                    <div>
+                                        <TextareaAutosize
+                                            aria-label="empty textarea"
+                                            placeholder="Lý do trả hàng"
+                                            style={{ width: 700, height: 100 }}
+                                            value={note}
+                                            onChange={e => setNote(e.target.value)}
+                                        />
+                                    </div>
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
@@ -575,6 +591,16 @@ const OrderHistory2 = () => {
         );
     }
     function RowReturn(props: { row: IOrderReturn }) {
+        const steps = [
+            'Chờ xem xét',
+            'Shop đợi nhận hàng',
+            'Shop đã nhận được hàng hoàn',
+            'Shop đã hoàn tiền',
+          ];
+          const stepsCancel = [
+            'Chờ xem xét',
+            'Shop từ chối yêu cầu hoàn trả',
+          ];
         const { row } = props;
         const [open, setOpen] = React.useState(false);
         return (
@@ -607,8 +633,37 @@ const OrderHistory2 = () => {
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1, alignContent: "center" }}>
                                 <Typography variant="h6" gutterBottom component="div">
-                                    Chi tiết
+                                    Chi tiết:
                                 </Typography>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status_return === 14)}>
+                                    <Stepper activeStep={2} alternativeLabel>
+                                        {stepsCancel.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status_return < 14 )}>
+                                    <Stepper activeStep={row.status_return - 12} alternativeLabel>
+                                        {steps.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status_return > 14 )}>
+                                    <Stepper activeStep={((row.status_return - 13)==3)?4:(row.status_return - 13)} alternativeLabel>
+                                        {steps.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+
+                                <br />
                                 <div>Địa chỉ nhận : </div>
                                 <Table size="small" aria-label="purchases" >
                                     <TableHead>
@@ -944,8 +999,6 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Giá tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Lý do trả hàng</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
-                                            <TableCell align="center">Thanh toán</TableCell>
-
                                             <TableCell align="center">Ngày tạo yêu cầu</TableCell>
                                         </TableRow>
                                     </TableHead>
