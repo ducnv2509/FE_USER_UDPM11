@@ -25,9 +25,29 @@ const PaymentMethods = (props: PaymentMethodsProps) => {
   const [paymentMethods, setPaymentMethod] = useState<undefined | GetPaymentMethodResponse>(undefined)
   const [listBank, setListBank] = useState<GetListBankResponse | undefined>(undefined)
 
-  
-  
-  useEffect(  () => {
+  // const [paymentMethods, setPaymentMethod] = useState({} as GetPaymentMethodResponse)
+  // const [listBank, setListBank] = useState([] as GetListBankResponse)
+  const [value, setValue] = useState('');
+
+
+  // const getPaymentMethod = async () => {
+  //   const paymentMethodRes = await paymentApi.getPaymentMethod('11')
+  //   setPaymentMethod(paymentMethodRes)
+  // }
+  // const getListBank = async () => {
+  //   const listBankRes = await paymentApi.getListBank()
+  //   console.log('thid id ' + listBankRes);
+
+  //   setListBank(listBankRes)
+  // }
+
+  // useEffect(() => {
+  //   getPaymentMethod()
+  //   getListBank()
+  //   console.log(paymentMethods);
+  // }, [])
+
+  useEffect(() => {
     const getPaymentMethod = async () => {
       const paymentMethodRes = await paymentApi.getPaymentMethod('11')
       setPaymentMethod(paymentMethodRes)
@@ -35,15 +55,12 @@ const PaymentMethods = (props: PaymentMethodsProps) => {
     const getListBank = async () => {
       const listBankRes = await paymentApi.getListBank()
       console.log('thid id ' + listBankRes);
-      
+
       setListBank(listBankRes)
     }
     getPaymentMethod()
     getListBank()
   }, [])
-  
-  console.log(paymentMethods);
-
   return (
     <div className="shadow overflow-hidden sm:rounded-md">
       <div className="px-4 py-5 bg-white sm:p-6">
@@ -83,9 +100,8 @@ const PaymentMethods = (props: PaymentMethodsProps) => {
                   <button
                     type="button"
                     onClick={() => props.setDomesticbank(item.code)}
-                    className={`rounded-lg border-2 hover:border-sky-700 ${
-                      props.domesticBank === item.code ? 'border-sky-700' : ''
-                    }`}
+                    className={`rounded-lg border-2 hover:border-sky-700 ${props.domesticBank === item.code ? 'border-sky-700' : ''
+                      }`}
                   >
                     <img className="h-16" src={`${item.iconFull}`} alt="" />
                   </button>

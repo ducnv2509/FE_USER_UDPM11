@@ -51,7 +51,7 @@ function Login() {
                             <div className="login-form border p-5">
                                 <div className="text-center heading">
                                     <h2 className="mb-2">Đăng nhập</h2>
-                                    <p className="lead">Không có tài khoản? <a href="#">Tạo một tài khoản miễn phí</a></p>
+                                    <p className="lead">Không có tài khoản? <a href="/signup">Tạo một tài khoản miễn phí</a></p>
                                 </div>
                                 <form onSubmit={handleSubmit(handleFormSubmit)}>
                                     <div className="form-group mb-4">
@@ -60,7 +60,7 @@ function Login() {
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="#">Nhập mật khẩu</label>
-                                        <a className="float-right" href="">Quên mật khẩu?</a>
+                                        <a className="float-right" href="/forgot-password">Quên mật khẩu?</a>
                                         <input type="password" className="form-control" placeholder="Enter Password" {...register('password')} required />
                                     </div>
                                     {loginError && <p className="text-danger my-4">{loginError}</p>}

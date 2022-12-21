@@ -27,10 +27,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         : 'empty access token',
     name: localStorage.getItem('UDPM11-name')
         ? (localStorage.getItem('UDPM11-name') as string)
-        : 'default',
+        : 'Bạn',
     id: localStorage.getItem('UDPM11-id')
         ? (localStorage.getItem('UDPM11-id') as string)
-        : 'default',
+        : 'Bạn',
     updateAuth: (newAuth) => {
         localStorage.setItem('UDPM11-role', newAuth.newRole)
         localStorage.setItem('UDPM11-accessToken', newAuth.newAccessToken)
@@ -43,6 +43,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         localStorage.removeItem('UDPM11-accessToken')
         localStorage.removeItem('UDPM11-name')
         localStorage.removeItem('UDPM11-id')
-        set({ role: 'anonymous', accessToken: "empty access token", name: 'default' })
+        set({ role: 'anonymous', accessToken: "empty access token", name: 'Bạn' })
     },
 }))

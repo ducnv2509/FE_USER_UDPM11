@@ -16,9 +16,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Button, Tabs, Checkbox, TextField } from "@mui/material";
+import { Button, Tabs, Checkbox, TextField, Autocomplete, TextareaAutosize, } from "@mui/material";
 import Tab from '@mui/material/Tab';
 import ButtonJoy from '@mui/joy/Button';
 import Divider from '@mui/joy/Divider';
@@ -27,13 +30,17 @@ import ModalJoyDialog from '@mui/joy/ModalDialog';
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import TypographyJoy from '@mui/joy/Typography';
 import moment from "moment";
+import { Input } from 'antd';
 import Swal from "sweetalert2";
+import { Stack } from "@mui/system";
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     value: number;
 
 }
+const { TextArea } = Input;
+
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
 
@@ -60,7 +67,7 @@ function a11yProps(index: number) {
     };
 }
 
-const Toast = Swal.mixin({
+export const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
@@ -68,14 +75,19 @@ const Toast = Swal.mixin({
     timerProgressBar: true,
 })
 
+
+
 const OrderHistory2 = () => {
+    const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
+    const format = (value: any) => new Intl.NumberFormat('vi-VN', config).format(value)
+
     let value_new: number;
     const [value, setValue] = React.useState(0);
     const accessToken = useAuthStore((e) => e.accessToken);
     const [currentStatus, setCurrentStatus] = React.useState(5);
     const [openModal, setOpenModal] = React.useState(0);
     const [openModalReturn, setOpenModalReturn] = React.useState(0);
-    const [note, setNote] = React.useState('');
+    const [word, setWord] = useState('');
     const [selected, setSelected] = React.useState<IOrderItem[]>([]);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -99,69 +111,17 @@ const OrderHistory2 = () => {
         setCurrentStatus(value_new);
     };
 
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>, rows: IOrderItem[]) => {
-        if (event.target.checked) {
-            const newSelected = rows;
-            setSelected(newSelected);
-            return;
-        }
-        setSelected([]);
-    };
-    const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNote(event.target.value);
-    };
-    const handleClick = (event: React.MouseEvent<unknown>, orderItem: IOrderItem) => {
-        const selectedIndex = selected.indexOf(orderItem);
-        let newSelected: IOrderItem[] = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, orderItem);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-        console.log(newSelected)
-        setSelected(newSelected);
-    };
-    const returnOrderbyIdOrder = (idOrder: number) => {
-        let totalQuantityReturn: number = 0;
-        let totalPriceReturn: number = 0;
-        let idOrderItem: number[] = [];
-        selected.map((e) => {
-            totalQuantityReturn += e.quantity
-            totalPriceReturn += e.total_price
-            idOrderItem.push(e.id)
-        })
-        console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
-        returnOrder(note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
-            console.log(res.data)
-            onClickHistory(8)
-            Toast.fire({
-                icon: 'success',
-                title: 'Yêu cầu thành công'
-            })
-        }, (err) => {
-            console.log(err);
-            Toast.fire({
-                icon: 'error',
-                title: 'Yêu cầu thất bại'
-            })
-        })
-    };
-    const isSelected = (orderItem: IOrderItem) => selected.indexOf(orderItem) !== -1;
-    const hasSelected = selected.length > 0;
 
     // let item : IOrderItem;
     const [history, setHistory] = useState([] as IHistory[]);
     const [historyReturn, setHistoryReturn] = useState([] as IOrderReturn[]);
     const [loading, setLoading] = useState(false);
-
+    const top100Films = [
+        { label: 'Hàng lỗi' },
+        { label: 'Nhầm hàng' },
+        { label: 'Nhầm size, màu, chất liệu' },
+        { label: 'Hàng không đúng như mô tả' },
+    ];
 
     useEffect(() => {
         setLoading(true)
@@ -183,8 +143,6 @@ const OrderHistory2 = () => {
         ));
     }, [historyReturn])
 
-
-
     const onClickHistory = (status_id: number) => {
         setPage(0);
         setLoading(true)
@@ -193,13 +151,20 @@ const OrderHistory2 = () => {
             getHistoryOrder(status_id, accessToken).then((res: any) => {
                 setLoading(false)
                 resResult = res.data.map((obj: IHistory) => ({ ...obj, order_item: [] }))
+                console.log(res);
+                console.log('10', resResult);
+
+                getHistoryOrder(11, accessToken).then((res: any) => {
+                    setLoading(false)
+                    const newResult = res.data.map((obj: IHistory) => ({ ...obj, order_item: [] }))
+                    resResult.concat(newResult)
+                })
+                console.log(resResult);
+
+                setHistory(resResult)
             })
-            getHistoryOrder(11, accessToken).then((res: any) => {
-                setLoading(false)
-                const newResult = res.data.map((obj: IHistory) => ({ ...obj, order_item: [] }))
-                resResult.concat(newResult)
-            })
-            setHistory(resResult)
+
+
         } else if (status_id === 12) {
             getHistoryOrderReturn(accessToken).then((res: any) => {
                 setLoading(false)
@@ -217,7 +182,7 @@ const OrderHistory2 = () => {
     }
     const onClickUpdateStatus = (status_id: number, order: IHistory) => {
         const index = history.indexOf(order)
-        updateStatus(status_id, order.id, accessToken).then((res) => {
+        updateStatus(status_id, order.id, accessToken).then(() => {
             let newList: IHistory[] = [];
             if (index === 0) {
                 newList = newList.concat(history.slice(1));
@@ -271,7 +236,7 @@ const OrderHistory2 = () => {
     }, [history])
 
     function checkDate(date_start: Date) {
-        console.log(date_start);
+        //console.log(date_start);
         let date_now = new Date().getTime();
         let date_compare = new Date(date_start).getTime();
         const startDate = moment(date_now);
@@ -279,15 +244,90 @@ const OrderHistory2 = () => {
         const diff = startDate.diff(timeEnd);
         const diffDuration = moment.duration(diff);
 
-        if (diffDuration.days() > 3) {
+        if (diffDuration.days() >= 3) {
             return true
         } else {
             return false
         }
     }
+
     function Row(props: { row: IHistory }) {
+        const steps = [
+            'Chờ xác nhận',
+            'Chờ lấy hàng',
+            'Đang giao hàng',
+            'Đã Nhận hàng',
+        ];
+
+        const stepsCancel = [
+            'Chờ xác nhận',
+            'Đã huỷ',
+        ];
         const { row } = props;
         const [open, setOpen] = React.useState(false);
+        const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>, rows: IOrderItem[]) => {
+            if (event.target.checked) {
+                const newSelected = rows;
+                setSelected(newSelected);
+                return;
+            }
+            setSelected([]);
+        };
+
+        const handleClick = (event: React.MouseEvent<unknown>, orderItem: IOrderItem) => {
+            const selectedIndex = selected.indexOf(orderItem);
+            let newSelected: IOrderItem[] = [];
+
+            if (selectedIndex === -1) {
+                newSelected = newSelected.concat(selected, orderItem);
+            } else if (selectedIndex === 0) {
+                newSelected = newSelected.concat(selected.slice(1));
+            } else if (selectedIndex === selected.length - 1) {
+                newSelected = newSelected.concat(selected.slice(0, -1));
+            } else if (selectedIndex > 0) {
+                newSelected = newSelected.concat(
+                    selected.slice(0, selectedIndex),
+                    selected.slice(selectedIndex + 1),
+                );
+            }
+            console.log(newSelected)
+            setSelected(newSelected);
+        };
+
+        const isSelected = (orderItem: IOrderItem) => selected.indexOf(orderItem) !== -1;
+        const hasSelected = selected.length > 0;
+        // ghi chu Kh sao khi hoan tra
+        const [note, setNote] = useState('');
+
+        // Khach hang hoan tra hang
+        const returnOrderbyIdOrder = (idOrder: number) => {
+            let totalQuantityReturn: number = 0;
+            let totalPriceReturn: number = 0;
+            let idOrderItem: number[] = [];
+            selected.map((e) => {
+                totalQuantityReturn += e.quantity
+                totalPriceReturn += e.total_price
+                idOrderItem.push(e.id)
+            })
+            console.log("data" + note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken)
+            returnOrder(note, idOrder, totalPriceReturn, totalQuantityReturn, idOrderItem, accessToken).then((res) => {
+                console.log(res.data)
+                onClickHistory(8)
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Yêu cầu thành công'
+                })
+            }, (err) => {
+                console.log(err);
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Yêu cầu thất bại'
+                })
+            })
+        };
+
+        // Log ghi chu KH tra hang
+        console.log(note);
         return (
             <React.Fragment>
                 <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} hover>
@@ -300,13 +340,13 @@ const OrderHistory2 = () => {
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                     </TableCell>
-                    <TableCell component="th" scope="row">
-                        {row.id}
+                    <TableCell component="th" scope="row" align="center">
+                        {row.code}
                     </TableCell>
                     <TableCell align="center">{row.total_quantity}</TableCell>
-                    <TableCell align="center">{row.total_price} </TableCell>
-                    <TableCell align="center">{row.fee_money} </TableCell>
-                    <TableCell align="center">{row.totalPrice} </TableCell>
+                    <TableCell align="center">{format(row.total_price)} </TableCell>
+                    <TableCell align="center">{format(row.fee_money)} </TableCell>
+                    <TableCell align="center">{format(row.totalPrice)} </TableCell>
                     <TableCell align="center" hidden={!(row.status === 5)}>Chờ xác nhận</TableCell>
                     <TableCell align="center" hidden={!(row.status === 6)}>Chờ xác ship lấy hàng</TableCell>
                     <TableCell align="center" hidden={!(row.status === 7)}>Đang giao hàng</TableCell>
@@ -314,17 +354,16 @@ const OrderHistory2 = () => {
                     <TableCell align="center" hidden={!(row.status === 9)}>Giao hàng thất bại</TableCell>
                     <TableCell align="center" hidden={!(row.status === 10)}>Huỷ bởi người dùng</TableCell>
                     <TableCell align="center" hidden={!(row.status === 11)}>Huỷ bởi admin</TableCell>
-                    <TableCell align="center">{row.created_time}</TableCell>
+                    <TableCell align="center">{row.typePay} </TableCell>
+                    <TableCell align="center"> {moment(row.created_time).format('DD/MM/YYYY')}</TableCell>
                     <TableCell align="center">
                         <Button hidden={value === 2 ? false : true} onClick={() => { onClickUpdateStatus(8, row) }}>
                             Đã nhận được hàng</Button>
-                        {/* <Button hidden={value === 0 ? false : true} onClick={() => { console.log(row.id)}}>
-                            Huỷ đơn hàng</Button> */}
                         <Button variant="outlined" color="error"
                             onClick={() => { setOpenModal(row.id); console.log(row.id) }}
                             hidden={value === 0 ? false : true}
                         >
-                            Huỷ đơn
+                            Huỷ
                         </Button>
                         <ModalJoy
                             aria-labelledby="alert-dialog-ModalJoy-title"
@@ -357,7 +396,7 @@ const OrderHistory2 = () => {
                                         Quay Lại
                                     </ButtonJoy>
                                     <Button variant="text" color="error" onClick={() => { onClickUpdateStatus(10, row); setOpenModal(0) }}>
-                                        Huỷ đơn
+                                        Huỷ
                                     </Button>
                                 </Box>
                             </ModalJoyDialog>
@@ -365,14 +404,35 @@ const OrderHistory2 = () => {
                     </TableCell>
 
                 </TableRow>
-                <TableRow>
-                    <TableCell style={{ padding: 0, paddingTop: 0 }} colSpan={8}>
+                <TableRow >
+                    <TableCell style={{ padding: 0, paddingTop: 0 }} colSpan={10}>
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1, alignContent: "center" }}>
                                 <Typography variant="h6" gutterBottom component="div">
-                                    Chi tiết
+                                    Chi tiết:
                                 </Typography>
-                                <div>Địa chỉ nhận :  {/*{row.diachi}*/}</div>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status === 10 || row.status === 11)}>
+                                    <Stepper activeStep={2} alternativeLabel>
+                                        {stepsCancel.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                                <Box sx={{ width: '100%' }} hidden={row.status === 10 || row.status === 11}>
+                                    <Stepper activeStep={((row.status - 5)==3)?4:(row.status - 5)} alternativeLabel>
+                                        {steps.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+
+                                <br />
+                                <div>Địa chỉ nhận :  {row.address_id}</div>
+                                <br />
                                 <Table size="small" aria-label="purchases" >
                                     <TableHead>
                                         <TableRow>
@@ -387,7 +447,6 @@ const OrderHistory2 = () => {
                                         {row.order_item?.map((order_item) => (
                                             <TableRow key={order_item.id}>
                                                 <TableCell align="left" width={100}>
-                                                    {/* <Avatar src={order_item.image} /> */}
                                                     <img src={order_item.image} width={100} />
                                                 </TableCell>
                                                 <TableCell align="left" component="th" scope="row" >
@@ -395,26 +454,30 @@ const OrderHistory2 = () => {
                                                 </TableCell>
                                                 <TableCell align="center">{order_item.option1 + ',' + order_item.option2 + ',' + order_item.option3}</TableCell>
                                                 <TableCell align="center">{order_item.quantity}</TableCell>
-                                                <TableCell align="center">{order_item.price}</TableCell>
-                                                <TableCell align="center">{order_item.total_price}</TableCell>
+                                                <TableCell align="center">{format(order_item.price)}</TableCell>
+                                                <TableCell align="center">{format(order_item.total_price)}</TableCell>
                                             </TableRow>
                                         ))}
                                         <TableRow>
                                             <TableCell rowSpan={4} colSpan={3} />
                                             <TableCell colSpan={2}>Tổng phụ:</TableCell>
-                                            <TableCell align="center">{row.total_price} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.total_price)}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Phí vận chuyển:</TableCell>
-                                            <TableCell align="center">{row.fee_money} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.fee_money)}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Tổng:</TableCell>
-                                            <TableCell align="center">{row.totalPrice} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.totalPrice)}</TableCell>
                                         </TableRow>
                                         <TableRow hidden={value === 3 ? false : true}>
                                             <TableCell colSpan={2}></TableCell>
-                                            <TableCell align="right" > <Button variant="contained" color="error" onClick={() => { setOpenModalReturn(row.id); setSelected([]); setNote('') }}>Yêu cầu trả hàng</Button></TableCell>
+                                            <TableCell align="right"
+                                                hidden={checkDate(row.date_main) || row.isReturn}
+
+                                            > <Button
+                                                variant="contained" color="error" onClick={() => { setOpenModalReturn(row.id); setSelected([]); }}>Yêu cầu trả hàng</Button></TableCell>
                                             <TableCell hidden={!row.isReturn} >Hoá đơn đã trả hàng</TableCell>
                                             <TableCell hidden={!checkDate(row.date_main)} >Hoá đơn quá hạn trả</TableCell>
                                         </TableRow>
@@ -454,7 +517,7 @@ const OrderHistory2 = () => {
                                                         checked={row.order_item.length === selected.length}
                                                         onChange={(e) => handleSelectAllClick(e, row.order_item)}
                                                         inputProps={{
-                                                            'aria-label': 'select all desserts',
+                                                            'aria-label': 'select all',
                                                         }}
                                                     />
                                                 </TableCell>
@@ -489,24 +552,38 @@ const OrderHistory2 = () => {
                                                     </TableCell>
                                                     <TableCell align="center">{order_item.option1 + ',' + order_item.option2 + ',' + order_item.option3}</TableCell>
                                                     <TableCell align="center">{order_item.quantity}</TableCell>
-                                                    <TableCell align="center">{order_item.price}</TableCell>
-                                                    <TableCell align="center">{order_item.total_price}</TableCell>
+                                                    <TableCell align="center">{format(order_item.price)}</TableCell>
+                                                    <TableCell align="center">{format(order_item.total_price)}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
+
                                     </Table>
-                                    <TextField autoComplete="off" fullWidth required sx={{ marginTop: 5 }} id="note" label="Lý do trả hàng" variant="outlined"
-                                        onChange={handleChangeInput} />
+                                    <label htmlFor="">Lý do trả hàng:</label>
+                                    <div>
+                                        <TextareaAutosize
+                                            aria-label="empty textarea"
+                                            placeholder="Lý do trả hàng"
+                                            style={{ width: 700, height: 100 }}
+                                            value={note}
+                                            onChange={e => setNote(e.target.value)}
+                                        />
+                                    </div>
                                 </TypographyJoy>
                                 <Box component="form" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }} >
                                     <ButtonJoy variant="plain" color="neutral" onClick={() => { setOpenModalReturn(0) }}>
                                         Quay Lại
                                     </ButtonJoy>
-                                    <Button variant="text" disabled={!hasSelected} color="error" type="submit" onClick={() => { returnOrderbyIdOrder(row.id); setOpenModalReturn(0) }}>
+                                    <Button variant="text" disabled={!hasSelected} color="error" type="submit" onClick={() => {
+                                        // console.log('note_string', note_string);
+                                        // returnOrderbyIdOrder(row.id); 
+                                        setOpenModalReturn(0)
+                                    }}>
                                         Trả hàng
                                     </Button>
                                 </Box>
                             </ModalJoyDialog>
+
                         </ModalJoy>
                     </TableCell>
                 </TableRow>
@@ -514,6 +591,16 @@ const OrderHistory2 = () => {
         );
     }
     function RowReturn(props: { row: IOrderReturn }) {
+        const steps = [
+            'Chờ xem xét',
+            'Shop đợi nhận hàng',
+            'Shop đã nhận được hàng hoàn',
+            'Shop đã hoàn tiền',
+          ];
+          const stepsCancel = [
+            'Chờ xem xét',
+            'Shop từ chối yêu cầu hoàn trả',
+          ];
         const { row } = props;
         const [open, setOpen] = React.useState(false);
         return (
@@ -532,7 +619,7 @@ const OrderHistory2 = () => {
                         {row.id}
                     </TableCell>
                     <TableCell align="center">{row.total_quantity_return}</TableCell>
-                    <TableCell align="center">{row.total_price_return} </TableCell>
+                    <TableCell align="center">{format(row.total_price_return)} </TableCell>
                     <TableCell align="center">{row.note} </TableCell>
                     <TableCell align="center" hidden={!(row.status_return === 12)}>Chờ xem xét</TableCell>
                     <TableCell align="center" hidden={!(row.status_return === 13)}>Shop đợi nhận hàng hoàn</TableCell>
@@ -546,9 +633,38 @@ const OrderHistory2 = () => {
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1, alignContent: "center" }}>
                                 <Typography variant="h6" gutterBottom component="div">
-                                    Chi tiết
+                                    Chi tiết:
                                 </Typography>
-                                <div>Địa chỉ nhận :  {/*{row.diachi}*/}</div>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status_return === 14)}>
+                                    <Stepper activeStep={2} alternativeLabel>
+                                        {stepsCancel.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status_return < 14 )}>
+                                    <Stepper activeStep={row.status_return - 12} alternativeLabel>
+                                        {steps.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                                <Box sx={{ width: '100%' }} hidden={!(row.status_return > 14 )}>
+                                    <Stepper activeStep={((row.status_return - 13)==3)?4:(row.status_return - 13)} alternativeLabel>
+                                        {steps.map((label, index) => (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+
+                                <br />
+                                <div>Địa chỉ nhận : </div>
                                 <Table size="small" aria-label="purchases" >
                                     <TableHead>
                                         <TableRow>
@@ -571,14 +687,14 @@ const OrderHistory2 = () => {
                                                 </TableCell>
                                                 <TableCell align="center">{order_item.optionProduct}</TableCell>
                                                 <TableCell align="center">{order_item.quantity}</TableCell>
-                                                <TableCell align="center">{order_item.price}</TableCell>
-                                                <TableCell align="center">{order_item.totalPrice}</TableCell>
+                                                <TableCell align="center">{format(order_item.price)}</TableCell>
+                                                <TableCell align="center">{format(order_item.totalPrice)}</TableCell>
                                             </TableRow>
                                         ))}
                                         <TableRow>
                                             <TableCell rowSpan={4} colSpan={3} />
                                             <TableCell colSpan={2}>Tổng:</TableCell>
-                                            <TableCell align="center">{row.total_quantity_return} VNĐ</TableCell>
+                                            <TableCell align="center">{format(row.total_price_return)} </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
@@ -650,6 +766,7 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                             <TableCell align="center">Huỷ Đơn</TableCell>
                                         </TableRow>
@@ -695,6 +812,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -740,6 +859,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                             <TableCell align="center">Xác nhận đơn hàng</TableCell>
                                         </TableRow>
@@ -786,6 +907,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -831,6 +954,8 @@ const OrderHistory2 = () => {
                                             <TableCell align="center">Phí vận chuyển (VNĐ)</TableCell>
                                             <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Trạng thái</TableCell>
+                                            <TableCell align="center">Thanh toán</TableCell>
+
                                             <TableCell align="center">Ngày tạo hoá đơn</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -911,4 +1036,5 @@ const OrderHistory2 = () => {
     )
 }
 export default OrderHistory2
+
 

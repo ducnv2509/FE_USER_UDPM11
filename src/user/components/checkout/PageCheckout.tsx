@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAuthStore } from "../../../hooks/zustand/auth";
@@ -9,6 +8,7 @@ import { Button, Section } from "../common";
 import PaymentMethods from "./payment-methods";
 import { getAmount } from "../../service/CheckoutService";
 import { IAmount } from "../../type/Payment";
+import React, {useEffect, useState} from "react";
 // import { getListBankAsync } from "../../features/payment/list-bank-slice";
 // import { getPaymentMethodsAsync } from "../../features/payment/payment-methods-slice";
 
@@ -18,14 +18,16 @@ export interface PaymentMethodsFormData {
 
 
 function PageCheckout() {
+  let objPay = JSON.parse(localStorage.getItem('objPayment') || '{}');
+  console.log(objPay);
 
-  const[amount, setAmout] = useState({} as IAmount)
+  const [amount, setAmout] = useState({} as IAmount)
   const accessToken = useAuthStore((e) => e.accessToken)
   useEffect(() => {
     getAmount(accessToken).then((res) => {
       setAmout(res.data)
     })
-  })
+  }, [])
 
   let paymentAmount = amount.total // ve sau thay cai nay nhe pe Duc
   let paymentID = amount.id// ve sau thay cai nay nhe pe Duc
@@ -68,7 +70,7 @@ function PageCheckout() {
     if (formSubmit.paymentOption.startsWith('INS-')) {
       dispatch(
         makeOneClickPaymentAsync({
-          amount: paymentAmount.toString(),
+          amount: (objPay.shipMoney + objPay.totalPrice).toString(),
           cardUid: formSubmit.paymentOption,
           userId: Number(userId),
           invoiceId: paymentID,
@@ -79,7 +81,7 @@ function PageCheckout() {
       if (formSubmit.paymentOption === 'DOMESTIC') {
         dispatch(
           makePaymentAsync({
-            amount: paymentAmount.toString(),
+            amount: (objPay.shipMoney + objPay.totalPrice).toString(),
             bankCode: domesticBank,
             paymentMethod: formSubmit.paymentOption,
             userId: Number(userId),
@@ -90,7 +92,7 @@ function PageCheckout() {
       } else {
         dispatch(
           makePaymentAsync({
-            amount: paymentAmount.toString(),
+            amount: (objPay.shipMoney + objPay.totalPrice).toString(),
             paymentMethod: formSubmit.paymentOption,
             userId: Number(userId),
             invoiceId: paymentID,

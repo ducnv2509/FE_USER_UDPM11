@@ -40,13 +40,13 @@ export const moneyFee = async (money: number, to_district: number, to_ward: stri
     );
 };
 
-export const addOrderPush = (address: string, note: string, id_cart_items: number[], money_fee: number, accessToken: string) => {
+export const addOrderPush = (address: string, note: string, id_cart_items: number[], money_fee: number, accessToken: string, type: number) => {
     let config = {
         headers: {
             token: accessToken
         }
     }
-    const obj = { address, note, id_cart_items, money_fee }
+    const obj = { address, note, id_cart_items, money_fee, type }
     console.log('obj ne ', obj)
     const body = JSON.stringify(obj);
     console.log(`${base_url_public}/cart/addOrderPurchase`)
