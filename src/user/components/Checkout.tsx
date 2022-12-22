@@ -13,8 +13,9 @@ import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { IInfoHuyen, IInfoMoneyFee, IInfoTP, IInfoXa } from "../type/InfoGHN";
-import { Avatar, NativeSelect } from "@mui/material";
+import { Avatar, NativeSelect, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Toast } from "./OrderHistory";
 
 function Checkout() {
     const accessToken = useAuthStore((e) => e.accessToken)
@@ -38,6 +39,7 @@ function Checkout() {
     const [nameTP, setNameTP] = useState('');
     const [nameHy, setNameHy] = useState('');
     const [nameXa, setNameXa] = useState('');
+    const [detailsAdress, setDetailsAdress] = useState('');
 
 
     const [moneyFeeShip, setMoneyFeeShip] = useState({} as IInfoMoneyFee);
@@ -117,8 +119,12 @@ function Checkout() {
             localStorage.setItem('objPayment', JSON.stringify(objPayment))
             navigate("/page-checkout")
         } else {
-            addOrderPush((nameXa + ' ' + nameHy + ' ' + nameTP), 'comming', id_cart_it_main, moneyFeeShip.total, accessToken, 2).then((res) => {
+            addOrderPush((detailsAdress + ', ' + nameXa + ', ' + nameHy + ', ' + nameTP), 'comming', id_cart_it_main, moneyFeeShip.total, accessToken, 2).then((res) => {
                 navigate("/history")
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Bạn đã đặt hàng thành công'
+                })
             }, (err) => {
                 console.log(err)
             })
@@ -153,14 +159,50 @@ function Checkout() {
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-8 pr-5">
-                                <div className="coupon-notice " data-toggle="modal" data-target="#coupon-modal">
+                                {/* <div className="coupon-notice " data-toggle="modal" data-target="#coupon-modal">
                                     <div className="bg-light p-3">
                                         Có phiếu giảm giá? <a href="/checkout" className="showcoupon" >Bấm vào đây để nhập mã của bạn</a>
                                     </div>
-                                </div>
-
+                                </div> */}
+                                <h4 className="mb-5">Chi tiết thanh toán</h4>
+                                <TableContainer component={Paper}>
+                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell align="center" colSpan={2} >Tên sản phẩm</TableCell>
+                                                <TableCell align="center">Tùy chọn</TableCell>
+                                                <TableCell align="center">Số lượng</TableCell>
+                                                <TableCell align="center">Giá tiền (VNĐ)</TableCell>
+                                                <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {cartItem.map((row) => (
+                                                <TableRow
+                                                    key={row.name}
+                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        <Avatar src={row.image} />
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        {row.name.split("-")[0]}
+                                                    </TableCell>
+                                                    <TableCell align="center">{row.option1 + ' - ' + row.option2 + ' - ' + row.option3}</TableCell>
+                                                    <TableCell align="center">{row.quantity}</TableCell>
+                                                    <TableCell align="center">
+                                                        {format(row.wholesale_price)}
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        {format(row.priceTotal)}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                                 <div className="billing-details mt-5">
-                                    <h4 className="">Chi tiết thanh toán</h4>
+                                    <h4 className="">Địa chỉ nhận hàng</h4>
                                     <div className="row m-5">
                                         <div className="col-md-6">
                                             <Box sx={{ minWidth: 120 }}>
@@ -257,43 +299,17 @@ function Checkout() {
                                                 </FormControl>
                                             </Box>
                                         </div>
+                                        <div className="col-md-12">
+                                            <TextField className="mt-3" fullWidth id="standard-basic" label="Địa chỉ chi tiết" variant="standard"
+                                                onChange={
+                                                    (e) => {
+                                                        setDetailsAdress(e.target.value)
+                                                    }
+                                                }
+
+                                            />
+                                        </div>
                                     </div>
-                                    <TableContainer component={Paper}>
-                                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell align="center" colSpan={2} >Tên sản phẩm</TableCell>
-                                                    <TableCell align="center">Tùy chọn</TableCell>
-                                                    <TableCell align="center">Số lượng</TableCell>
-                                                    <TableCell align="center">Giá tiền (VNĐ)</TableCell>
-                                                    <TableCell align="center">Tổng tiền (VNĐ)</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {cartItem.map((row) => (
-                                                    <TableRow
-                                                        key={row.name}
-                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                    >
-                                                        <TableCell component="th" scope="row">
-                                                            <Avatar src={row.image} />
-                                                        </TableCell>
-                                                        <TableCell component="th" scope="row">
-                                                            {row.name.split("-")[0]}
-                                                        </TableCell>
-                                                        <TableCell align="center">{row.option1 + ' - ' + row.option2 + ' - ' + row.option3}</TableCell>
-                                                        <TableCell align="center">{row.quantity}</TableCell>
-                                                        <TableCell align="center">
-                                                            {format(row.wholesale_price)}
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            {format(row.priceTotal)}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
                                 </div>
                             </div>
 
@@ -312,15 +328,16 @@ function Checkout() {
 
                                     <ul className="summary-prices list-unstyled mb-4">
                                         <li className="d-flex justify-content-between">
-                                            <span >Tổng phụ:</span>totalPrice
+                                            <span >Tổng tiền hàng:</span>
                                             <span className="h5">
                                                 {format(totalPrice)}
                                             </span>
                                         </li>
                                         <li className="d-flex justify-content-between">
                                             <span >Phí vận chuyển:</span>
+                                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style={{ width: 100 }} className="img-fluid" alt="" />
                                             <span className="h5">
-                                                {isNaN(moneyFeeShip.total)? format(0) :format(moneyFeeShip.total)}
+                                                {isNaN(moneyFeeShip.total) ? format(0) : format(moneyFeeShip.total)}
                                             </span>
                                         </li>
                                         <li className="d-flex justify-content-between">
@@ -334,7 +351,7 @@ function Checkout() {
                                     <form action="#">
                                         <div className="form-check mb-3">
                                             <input className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1"
-                                                onChange={
+                                                onClick={
                                                     () => {
                                                         setTypePay(1)
                                                     }
@@ -353,7 +370,7 @@ function Checkout() {
 
                                         <div className="form-check mb-3">
                                             <input className="form-check-input" type="radio" name="exampleRadios"
-                                                onChange={
+                                                onClick={
                                                     () => {
                                                         setTypePay(2)
                                                     }
@@ -368,10 +385,6 @@ function Checkout() {
                                             <label className="form-check-label" htmlFor="exampleCheck3">Đặt hàng đồng nghĩa với việc đồng ý với các chính sách của shop.</label>
                                         </div>
                                     </form>
-
-                                    <div className="info mt-4 border-top pt-4 mb-5">
-                                        Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên toàn bộ trang web này và cho các mục đích khác được mô tả trong <a href="#">Chính sách bảo mật</a>.
-                                    </div>
 
                                     <button className="btn btn-main btn-small d-flex justify-content-center"
                                         onClick={() => {

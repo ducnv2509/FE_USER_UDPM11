@@ -50,7 +50,7 @@ export const makePaymentAsync = createAsyncThunk(
                 invoiceId: data.invoiceId,
                 invoiceCode: data.invoiceCode,
                 saveCard: 0,
-                AgainLink: `http://localhost:3000/shop`,
+                AgainLink: `http://180.93.175.236:3000/shop`,
             }
             const response = await paymentApi.makePayment(request)
             // console.log('check bug request', request)

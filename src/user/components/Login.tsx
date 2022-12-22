@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../hooks/zustand/auth"
 import { loginApi } from "../service/Authentication"
+import { Toast } from "./OrderHistory"
 
 export type LoginFormData = {
     username: string
@@ -16,7 +17,6 @@ function Login() {
         handleSubmit,
     } = useForm<LoginFormData>()
 
-    let [loginError, setLoginError] = useState();
 
     let navigate = useNavigate()
 
@@ -29,16 +29,19 @@ function Login() {
         //     dispatch(logIn({ username: 'hoang', password: 'hoang123' }))
         //   })
         //   .catch((err) => console.log(err))
-        try {
-            const response = await loginApi(data.username, data.password)
-            console.log('in')
-            console.log('response.data.id ', response.data.id )
-            updateAuth({ newAccessToken: response.data.accessToken, newRole: response.data.type, newName: response.data.name, newId: response.data.id })
+        await loginApi(data.username, data.password).then(res => {
+            updateAuth({ newAccessToken: res.data.accessToken, newRole: res.data.type, newName: res.data.name, newId: res.data.id })
             navigate('/shop')
-        } catch (error: any) {
-            setLoginError(error);
-            console.log('this bug', error)
-        }
+            Toast.fire({
+                icon: 'success',
+                title: `Chào mừng ${res.data.name} !`
+            })
+        }).catch(err => {
+            Toast.fire({
+                icon: 'error',
+                title: err.response.data.error
+            })
+        })
 
     }
 
@@ -63,7 +66,6 @@ function Login() {
                                         <a className="float-right" href="/forgot-password">Quên mật khẩu?</a>
                                         <input type="password" className="form-control" placeholder="Enter Password" {...register('password')} required />
                                     </div>
-                                    {loginError && <p className="text-danger my-4">{loginError}</p>}
                                     <input type="submit" className="btn btn-main mt-3 btn-block" />
                                 </form>
                             </div>

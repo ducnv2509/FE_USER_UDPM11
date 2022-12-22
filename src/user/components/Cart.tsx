@@ -263,21 +263,7 @@ const Cart = () => {
                                         />
                                     </div>
 
-                                    <table className="table shop_table shop_table_responsive cart" cellSpacing="0">
-                                        <tr>
-                                            <td colSpan={6} className="actions">
-                                                <div className="coupon">
-                                                    <input type="text" name="coupon_code" className="input-text form-control" id="coupon_code" value="" placeholder="Coupon code" />
-                                                    <button type="button" className="btn btn-black btn-small" name="apply_coupon" value="Apply coupon">Áp dụng phiếu giảm giá</button>
-                                                    <span className="float-right mt-3 mt-lg-0">
-                                                        <button type="button" className="btn btn-dark btn-small" name="update_cart" value="Update cart" disabled>Cập nhật giỏ hàng</button>
-                                                    </span>
-                                                </div>
-                                                <input type="hidden" id="woocommerce-cart-nonce" name="woocommerce-cart-nonce" value="27da9ce3e8" />
-                                                <input type="hidden" name="_wp_http_referer" value="/cart/" />
-                                            </td>
-                                        </tr>
-                                    </table>
+                                   
 
                                 </form>
                             </div>
@@ -306,7 +292,7 @@ const Cart = () => {
                                         navigate('/checkout')
                                     }}
                                     disabled={selectedRow.length < 1}
-                                >Tiến hành kiểm tra</button>
+                                >Thanh toán</button>
                             </div>
                         </div>
                     </div>

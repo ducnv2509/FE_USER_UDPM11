@@ -19,7 +19,7 @@ export interface PaymentMethodsFormData {
 
 function PageCheckout() {
   let objPay = JSON.parse(localStorage.getItem('objPayment') || '{}');
-  console.log(objPay);
+  console.log('THIS BUG PAGECHECKOUT', objPay);
 
   const [amount, setAmout] = useState({} as IAmount)
   const accessToken = useAuthStore((e) => e.accessToken)
