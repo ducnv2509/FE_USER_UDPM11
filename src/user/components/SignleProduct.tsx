@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getDetailProduct } from "../service/HomePage";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { getAllProduct, getDetailProduct } from "../service/HomePage";
 import { addToCart, getProductOption } from "../service/SignleProduct";
-import { IInfo } from "../type/HomePage";
+import { IHomePage, IInfo } from "../type/HomePage";
 import FormLabel from '@mui/joy/FormLabel';
 import Radio, { radioClasses } from '@mui/joy/Radio';
 import Button from '@mui/material/Button';
@@ -10,6 +10,7 @@ import RadioGroup from '@mui/joy/RadioGroup';
 import Sheet from '@mui/joy/Sheet';
 import { useAuthStore } from "../../hooks/zustand/auth";
 import Swal from "sweetalert2";
+import { Pagination } from "antd";
 function SingleProduct() {
     const accessToken = useAuthStore((e) => e.accessToken)
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
@@ -18,6 +19,7 @@ function SingleProduct() {
     const [option1, setOption1] = useState([]);
     const [option2, setOption2] = useState([]);
     const [option3, setOption3] = useState([]);
+    const [products, setProducts] = useState([{} as IHomePage]);
 
     const [op1, setOp1] = useState('');
     const [op2, setOp2] = useState('');
@@ -41,9 +43,9 @@ function SingleProduct() {
             setOption2(response.data.Option2)
             setOption3(response.data.Option3)
         });
-
-
-
+        getAllProduct().then((r) => {
+            setProducts(r.data);
+        });
     }, []);
 
 
@@ -87,6 +89,25 @@ function SingleProduct() {
             })
         })
     }
+    const [page, setPage] = useState({ fist: 0, last: 4 });
+    const handleChange = (value: any) => {
+        if (value <= 1) {
+            setPage({
+                fist: 0,
+                last: 4
+            });
+        } else if (value * 4 > products.length) {
+            setPage({
+                fist: (value * 4) - 4,
+                last: products.length
+            });
+        } else {
+            setPage({
+                fist: (value * 4) - 4,
+                last: value * 4
+            });
+        }
+    };
     const checkQuantity = (quantity: any, quantityBuy: any) => { return Number(quantityBuy) > quantity }
     return (
         <div className="single-product-container">
@@ -146,17 +167,17 @@ function SingleProduct() {
                             <div className="single-product-details mt-5 mt-lg-0">
                                 <h2>{infos.name}</h2>
                                 <div className="sku_wrapper mb-4">
-                                    Mã hàng: <span className="text-muted">AB1563456789 </span>
+                                    Mã hàng: <span className="text-muted">{infos.code} </span>
                                 </div>
 
                                 <hr />
 
                                 <h3 className="product-price">{new Intl.NumberFormat('vi-VN', config).format(infos.price)}vnd
-                                {/* <del>$119.90</del> */}
+                                    {/* <del>$119.90</del> */}
                                 </h3>
 
                                 <p className="product-description my-4 ">
-                                    Điều rất quan trọng đối với khách hàng là phải chú ý đến quá trình adipiscing. Người ta cho rằng, bản thân lao động là do có người bỏ mặc cho đau đớn, hưởng lợi. Tất cả các kết quả hạnh phúc của chúng tôi, kết quả của họ? Nó sẽ là hậu quả của việc từ chối chính lời nói.
+                                    Chú ý: Chính sách trả hàng của chúng tôi trong vòng 3 ngày kể từ khi bạn nhận được hàng. Vì vậy hãy chọn những sản phẩm mà bạn ưng ý nhất. Chúc bạn có những trải nghiệp tốt nhất ở website của chúng tôi
                                 </p>
 
 
@@ -330,135 +351,11 @@ function SingleProduct() {
                                         </div>
                                     </div>
                                     {/* </form> */}
-                                    <div className="product-share mt-5">
-                                        <ul className="list-inline">
-                                            <li className="list-inline-item">
-                                                <a href="!#"><i className="tf-ion-social-facebook"></i></a>
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <a href="!#"><i className="tf-ion-social-twitter"></i></a>
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <a href="!#"><i className="tf-ion-social-linkedin"></i></a>
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <a href="!#"><i className="tf-ion-social-pinterest"></i></a>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
 
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <nav className="product-info-tabs wc-tabs mt-5 mb-5">
-                                <div className="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                    <a className="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Description</a>
-                                    <a className="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Additional Information</a>
-                                    <a className="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Reviews(2)</a>
-                                </div>
-                            </nav>
-
-                            <div className="tab-content" id="nav-tabContent">
-                                <div className="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                                    <p>Trẻ em đang sống với bệnh tật, tuổi già và trẻ em, và họ đang phải chịu đựng cái đói và cái nghèo. Vestibulum tra tấn quam, feugiat vitae, cần tối tân, thời gian phải có trước đó. Cho đến lúc đó, bóng đá tự do quan trọng hơn bao giờ hết. Aenean là kẻ thù của cuộc đời tôi. Mauris investmentrat eleifend leo.</p>
-
-                                    <h4>Tính năng sản phẩm</h4>
-
-                                    <ul className="">
-                                        <li>Được ánh xạ với 3M ™ Thinsulate ™ Cách nhiệt [40G Thân áo / Tay áo / Mũ trùm]</li>
-                                        <li>Lót Taffeta dập nổi</li>
-                                        <li>Vải Oxford 2 lớp DRYRIDE Durashell ™ [10.000MM, 5.000G]</li>
-                                    </ul>
-
-                                </div>
-                                <div className="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-
-                                    <ul className="list-unstyled info-desc">
-                                        <li className="d-flex">
-                                            <strong>Trọng lượng </strong>
-                                            <span>400 g</span>
-                                        </li>
-                                        <li className="d-flex">
-                                            <strong>Kích thước </strong>
-                                            <span>10 x 10 x 15 cm</span>
-                                        </li>
-                                        <li className="d-flex">
-                                            <strong>Vật liệu</strong>
-                                            <span >60% cotton, 40% polyester</span>
-                                        </li>
-                                        <li className="d-flex">
-                                            <strong>Màu sắc </strong>
-                                            <span>Blue, Gray, Green, Red, Yellow</span>
-                                        </li>
-                                        <li className="d-flex">
-                                            <strong>Kích thước</strong>
-                                            <span>L, M, S, XL, XXL</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-                                    <div className="row">
-                                        <div className="col-lg-7">
-                                            <div className="media review-block mb-4">
-                                                <img src="assets/images/avater-1.jpg" alt="reviewimg" className="img-fluid mr-4" />
-                                                <div className="media-body">
-                                                    <div className="product-review">
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                    </div>
-                                                    <h6>Therichpost <span className="text-sm text-muted font-weight-normal ml-3">-June 23, 2019</span></h6>
-                                                    <p>Điều rất quan trọng đối với khách hàng là phải chú ý đến quá trình adipiscing. Anh ta nhận lấy hậu quả, nhìn thấy những người khen ngợi cô bỏ trốn. Nó thường là một sai lầm để đúng.</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="media review-block">
-                                                <img src="assets/images/avater-2.jpg" alt="reviewimg" className="img-fluid mr-4" />
-                                                <div className="media-body">
-                                                    <div className="product-review">
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star"></i></span>
-                                                        <span><i className="tf-ion-android-star-outline"></i></span>
-                                                    </div>
-                                                    <h6>Therichpost <span className="text-sm text-muted font-weight-normal ml-3">-June 23, 2019</span></h6>
-                                                    <p>Điều rất quan trọng đối với khách hàng là phải chú ý đến quá trình adipiscing. Anh ta nhận lấy hậu quả, nhìn thấy những người khen ngợi cô bỏ trốn. Nó thường là một sai lầm để đúng.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        <div className="col-lg-5">
-                                            <div className="review-comment mt-5 mt-lg-0">
-                                                <h4 className="mb-3">Thêm một bài đánh giá</h4>
-
-                                                <form action="#">
-                                                    <div className="starrr"></div>
-                                                    <div className="form-group">
-                                                        <input type="text" className="form-control" placeholder="Your Name" />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <input type="email" className="form-control" placeholder="Your Email" />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <textarea name="comment" id="comment" className="form-control" cols={30} rows={4} placeholder="Your Review"></textarea>
-                                                    </div>
-
-                                                    <a href="/product-single" className="btn btn-main btn-small">Gửi đánh giá</a>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -469,35 +366,55 @@ function SingleProduct() {
                     <div className="row justify-content-center">
                         <div className="col-lg-6">
                             <div className="title text-center">
-                                <h2>Bạn có thể thích điều này</h2>
-                                <p>Bán hàng trực tuyến tốt nhất để mua sắm vào cuối tuần này</p>
+                                <h2>Các sản phẩm khác</h2>
+                                <p>Mua hàng trực tuyến tốt nhất để mua sắm vào cuối tuần</p>
                             </div>
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-lg-3 col-6" >
-                            <div className="product">
-                                <div className="product-wrap">
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/322.jpg" alt="product-img" /></a>
-                                    <a href="/product-single"><img className="img-fluid w-100 mb-3 img-second" src="assets/images/444.jpg" alt="product-img" /></a>
-                                </div>
+                        {products && products.length > 0 &&
+                            products.slice(page.fist, page.last).map(p => {
+                                return (
+                                    <div className="col-lg-3 col-6" >
+                                        <div className="product">
+                                            <>
+                                                <div className="product-wrap">
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        <img className="img-fluid w-100 mb-3 img-first" src={p.image} alt="product-img" />
+                                                        <img className="img-fluid w-100 mb-3 img-second" src={p.image} alt="product-img" />
+                                                    </Link>
+                                                </div>
+                                                <div className="product-hover-overlay">
+                                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
+                                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
+                                                </div>
 
-                                <span className="onsale">Doanh thu</span>
-                                <div className="product-hover-overlay">
-                                    <a href="!#"><i className="tf-ion-android-cart"></i></a>
-                                    <a href="!#"><i className="tf-ion-ios-heart"></i></a>
-                                </div>
+                                                <div className="product-info">
+                                                    <h2 className="product-title h5 mb-0">
+                                                        <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                            {p.name}
+                                                        </Link>
+                                                    </h2>
+                                                    <span className="price">
+                                                        {p.wholesale_price}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        </div>
+                                    </div>
+                                )
 
-                                <div className="product-info">
-                                    <h2 className="product-title h5 mb-0"><a href="/product-single">Kirby Shirt</a></h2>
-                                    <span className="price">
-                                        $329.10
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                            })}
+                        <Pagination
+                            defaultCurrent={1}
+                            defaultPageSize={4}
+                            onChange={handleChange}
+                            total={products.length}
+                            style={{ margin: "auto" }}
+                        />
 
-                        <div className="col-lg-3 col-6" >
+
+                        {/* <div className="col-lg-3 col-6" >
                             <div className="product">
                                 <div className="product-wrap">
                                     <a href="/product-single"><img className="img-fluid w-100 mb-3 img-first" src="assets/images/111.jpg" alt="product-img" /></a>
@@ -562,7 +479,7 @@ function SingleProduct() {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </section>

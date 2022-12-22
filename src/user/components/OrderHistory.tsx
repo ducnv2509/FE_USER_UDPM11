@@ -355,7 +355,7 @@ const OrderHistory2 = () => {
                     <TableCell align="center" hidden={!(row.status === 10)}>Huỷ bởi người dùng</TableCell>
                     <TableCell align="center" hidden={!(row.status === 11)}>Huỷ bởi admin</TableCell>
                     <TableCell align="center">{row.typePay} </TableCell>
-                    <TableCell align="center"> {moment(row.created_time).format('DD/MM/YYYY')}</TableCell>
+                    <TableCell align="center"> {moment(row.created_time).format('DD/MM/YYYY HH:mm:ss')}</TableCell>
                     <TableCell align="center">
                         <Button hidden={value === 2 ? false : true} onClick={() => { onClickUpdateStatus(8, row) }}>
                             Đã nhận được hàng</Button>
@@ -576,7 +576,7 @@ const OrderHistory2 = () => {
                                     </ButtonJoy>
                                     <Button variant="text" disabled={!hasSelected} color="error" type="submit" onClick={() => {
                                         // console.log('note_string', note_string);
-                                        // returnOrderbyIdOrder(row.id); 
+                                        returnOrderbyIdOrder(row.id); 
                                         setOpenModalReturn(0)
                                     }}>
                                         Trả hàng
@@ -616,7 +616,10 @@ const OrderHistory2 = () => {
                         </IconButton>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                        {row.id}
+                        {row.code}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                        {row.codeInvoice}
                     </TableCell>
                     <TableCell align="center">{row.total_quantity_return}</TableCell>
                     <TableCell align="center">{format(row.total_price_return)} </TableCell>
@@ -626,7 +629,7 @@ const OrderHistory2 = () => {
                     <TableCell align="center" hidden={!(row.status_return === 14)}>Từ chối yêu cầu</TableCell>
                     <TableCell align="center" hidden={!(row.status_return === 15)}>Shop đã nhận được hàng hoàn</TableCell>
                     <TableCell align="center" hidden={!(row.status_return === 16)}>Shop đã hoàn tiền</TableCell>
-                    <TableCell align="center">{row.create_date}</TableCell>
+                    <TableCell align="center">{moment(row.create_date).format('DD/MM/YYYY')}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell style={{ padding: 0, paddingTop: 0 }} colSpan={8}>
@@ -994,7 +997,8 @@ const OrderHistory2 = () => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell />
-                                            <TableCell align="center">Mã hoá đơn</TableCell>
+                                            <TableCell align="center">Mã hoá đơn hoàn trả</TableCell>
+                                            <TableCell align="center">Mã hoá đơn mua hàng</TableCell>
                                             <TableCell align="center">Số lượng</TableCell>
                                             <TableCell align="center">Giá tiền (VNĐ)</TableCell>
                                             <TableCell align="center">Lý do trả hàng</TableCell>

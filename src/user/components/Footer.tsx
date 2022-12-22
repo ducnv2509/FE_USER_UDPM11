@@ -9,11 +9,9 @@ function Footer() {
                         <div className="col-md-6 col-lg-4 col-sm-6 mb-5 mb-lg-0 text-center text-sm-left mr-auto">
                             <div className="footer-widget">
                                 <h4 className="mb-4">E-Shop</h4>
-                                <p className="lead">Ai có thể ngoại trừ những nỗi đau này một cách đúng đắn, họ đang thiếu.</p>
-
                                 <div className="">
-                                    <p className="mb-0"><strong>Địa điểm : </strong>Bắc Punjab, ẤN ĐỘ</p>
-                                    <p><strong>Email hỗ trợ: </strong> support@email.com</p>
+                                    <p className="mb-0"><strong>Địa điểm : </strong>65 Đường Mạc Thị Bưởi</p>
+                                    <p><strong>Email hỗ trợ: </strong>vietanhnh123@gmail.com</p>
                                 </div>
                             </div>
                         </div>
@@ -22,11 +20,10 @@ function Footer() {
                             <div className="footer-widget">
                                 <h4 className="mb-4">Loại</h4>
                                 <ul className="pl-0 list-unstyled mb-0">
-                                    <li><a href="!#">Thời trang nam</a></li>
-                                    <li><a href="!#">Thời trang của phụ nữ</a></li>
-                                    <li><a href="!#">Thời trang trẻ em</a></li>
-                                    <li><a href="!#">phụ kiện</a></li>
-                                    <li><a href="!#">Bộ sưu tập giày</a></li>
+                                    <li><p>Thời trang nam</p></li>
+                                    <li><p>Thời trang của phụ nữ</p></li>
+                                    <li><p>Phụ kiện</p></li>
+                                    <li><p>Bộ sưu tập giày</p></li>
                                 </ul>
                             </div>
                         </div>
@@ -35,11 +32,11 @@ function Footer() {
                             <div className="footer-widget">
                                 <h4 className="mb-4">Liên kết hữu ích</h4>
                                 <ul className="pl-0 list-unstyled mb-0">
-                                    <li><a href="!#">Tin tức &amp; Lời khuyên</a></li>
-                                    <li><a href="!#">Về chúng tôi</a></li>
-                                    <li><a href="!#">Ủng hộ</a></li>
-                                    <li><a href="!#">Cửa hàng của chúng tôi</a></li>
-                                    <li><a href="!#">Liên hệ chúng tôi</a></li>
+                                    <li><p>Tin tức &amp; Lời khuyên</p></li>
+                                    <li><p>Về chúng tôi</p></li>
+                                    <li><p>Ủng hộ</p></li>
+                                    <li><p>Cửa hàng của chúng tôi</p></li>
+                                    <li><p>Liên hệ chúng tôi</p></li>
                                 </ul>
                             </div>
                         </div>
@@ -53,7 +50,7 @@ function Footer() {
                                     <li className="d-lg-flex justify-content-between">Chủ nhật <span>12-20.00</span></li>
                                 </ul>
 
-                                <h5>Gọi ngay bây giờ : +(000) 000-000</h5>
+                                <h5>Gọi ngay bây giờ : 033242123</h5>
                             </div>
                         </div>
                     </div>
@@ -65,14 +62,14 @@ function Footer() {
                 <div className="container">
                     <div className="row ">
                         <div className="col-lg-6">
-                            <p className="copyright mb-0 ">@ Bản quyền được bảo lưu cho therichpost &amp; made by <a href="https://therichpost.com/">therichpost</a></p>
+                            <p className="copyright mb-0 ">@ Bản quyền được bảo lưu cho therichpost &amp; made by <p>therichpost</p></p>
                         </div>
                         <div className="col-lg-6">
                             <ul className="list-inline mb-0 footer-btm-links text-lg-right mt-2 mt-lg-0">
-                                <li className="list-inline-item"><a href="!#">Chính sách bảo mật</a></li>
-                                <li className="list-inline-item"><a href="!#">Điều kiện &amp; Các điều kiện</a></li>
-                                <li className="list-inline-item"><a href="!#">Chính sách Cookie</a></li>
-                                <li className="list-inline-item"><a href="!#">Điều khoản bán hàng</a></li>
+                                <li className="list-inline-item"><p>Chính sách bảo mật</p></li>
+                                <li className="list-inline-item"><p>Điều kiện &amp; Các điều kiện</p></li>
+                                <li className="list-inline-item"><p>Chính sách Cookie</p></li>
+                                <li className="list-inline-item"><p>Điều khoản bán hàng</p></li>
                             </ul>
                         </div>
                     </div>

@@ -2,18 +2,19 @@ import { Autocomplete, Checkbox, FormControl, FormControlLabel, FormGroup, Input
 import { Box } from "@mui/system";
 import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { addOrderPush } from "../service/CheckoutService";
-import { filterByCategory, getAllProduct, showAllCategory } from "../service/HomePage";
+import { filterByCategory, getAllProduct, getPopular, showAllCategory } from "../service/HomePage";
 import { ICategory, IHomePage } from "../type/HomePage";
 import { Toast } from "./OrderHistory";
 
 function Shop() {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const [products, setProducts] = useState([{} as IHomePage]);
+    const [popular, setPopular] = useState([{} as IHomePage]);
     const [filterProduct, setFilterProduct] = useState([{} as IHomePage]);
     const [category, setCategory] = useState([{} as ICategory]);
-
+    const { urlParamsCheck } = useParams();
     useEffect(() => {
         document.title = "All Product"
     }, [])
@@ -34,39 +35,49 @@ function Shop() {
         showAllCategory().then((r) => {
             setCategory(r.data)
         })
-    }, []);
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    console.log("url", urlParams.get('transCode'));
-    if (urlParams.get('code') == '0' && urlParams.get('transCode')?.startsWith('PAY-') != undefined) {
-        let objPay = JSON.parse(localStorage.getItem('objPayment') || '{}');
-        addOrderPush(objPay.address, objPay.note, objPay.cart_items, objPay.shipMoney, objPay.accessToken, objPay.typePay).then((res) => {
-            localStorage.removeItem('objPayment')
-            localStorage.removeItem('listItem')
-            Toast.fire('success', 'Đặt hàng thành công')
-            console.log(res);
-        }, (err) => {
-            console.log(err);
+        getPopular().then(res => {
+            setPopular(res.data)
         })
-        console.log('Đặt hàng thành công');
-    }
-    const [page, setPage] = useState({ fist: 0, last: 10 });
+    }, []);
+    useEffect(() => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        console.log("url", urlParams.get('transCode'));
+        let objPay = JSON.parse(localStorage.getItem('objPayment') || '{}');
+        if (urlParams.get('code') == '0' && urlParams.get('transCode')?.startsWith('PAY-') != undefined) {
+            console.log('THIS IS BUG FIRST', objPay)
+            console.log('This is BUG ----------------------- ', objPay.address, objPay.note, objPay.cart_items, objPay.shipMoney, objPay.accessToken, objPay.typePay);
+            addOrderPush(objPay.address, objPay.note, objPay.cart_items, objPay.shipMoney, objPay.accessToken, objPay.typePay).then((res) => {
+                localStorage.removeItem('objPayment')
+                localStorage.removeItem('listItem')
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Chúc mừng bạn đặt hàng thành công !'
+                })
+
+            }, (err) => {
+                console.log(err);
+            })
+        }
+    }, [urlParamsCheck])
+
+    const [page, setPage] = useState({ fist: 0, last: 6 });
     const [sortFilterCurrent, setSortFilterCurrent] = useState('');
     const handleChange = (value: any) => {
         if (value <= 1) {
             setPage({
                 fist: 0,
-                last: 9
+                last: 6
             });
-        } else if (value * 10 > products.length) {
+        } else if (value * 6 > products.length) {
             setPage({
-                fist: (value * 10) - 10,
+                fist: (value * 6) - 6,
                 last: products.length
             });
         } else {
             setPage({
-                fist: (value * 10) - 10,
-                last: value * 10
+                fist: (value * 6) - 6,
+                last: value * 6
             });
         }
     };
@@ -101,7 +112,7 @@ function Shop() {
                     .map((e: any) => { return e; })
                 console.log(filterPrice);
                 setFilterProduct(filterPrice);
-            }else{
+            } else {
                 setFilterProduct(res.data);
             }
         })
@@ -109,12 +120,12 @@ function Shop() {
 
     const [selected, setSelected] = React.useState<number[]>([]);
     useEffect(() => {
-        if(selected.length !==0){
+        if (selected.length !== 0) {
             filterCate(selected)
-        }else{
+        } else {
             setFilterProduct(products)
         }
-    },[selected])
+    }, [selected])
     const handleClick = (id: number) => {
         const selectedIndex = selected.indexOf((id));
         let newSelected: number[] = [];
@@ -166,7 +177,7 @@ function Shop() {
                                         <h2 className="d-block text-left-sm">Cửa hàng</h2>
 
                                         <div className="heading d-flex justify-content-between mb-5">
-                                            <p className="result-count mb-0">Hiển thị 1–6 trong số 17 kết quả</p>
+                                            <p className="result-count mb-0">Hiển thị 1–6 trong số {products.length} kết quả</p>
                                             <Box sx={{ minWidth: 120 }}>
                                                 <FormControl fullWidth>
                                                     <InputLabel id="demo-simple-select-label">Giá</InputLabel>
@@ -220,12 +231,13 @@ function Shop() {
 
                                     )}
 
-                                <div className="col-12">
+                                <div className="col-12" style={{ textAlign: "center" }}>
                                     <Pagination
                                         defaultCurrent={1}
-                                        defaultPageSize={10}
+                                        defaultPageSize={6}
                                         onChange={handleChange}
-                                        total={products.length}
+                                        total={filterProduct.length}
+
                                     />
                                 </div>
                             </div>
@@ -321,29 +333,19 @@ function Shop() {
 
                             <section className="widget widget-popular mb-5">
                                 <h3 className="widget-title mb-4 h4">Sản phẩm phổ biến</h3>
-                                <a className="popular-products-item media" href="/product-single">
-                                    <img src="assets/images/p-1.jpg" alt="" className="img-fluid mr-4" />
-                                    <div className="media-body">
-                                        <h6>Tương phản <br />Balo</h6>
-                                        <span className="price">$45</span>
-                                    </div>
-                                </a>
-
-                                <a className="popular-products-item media" href="/product-single">
-                                    <img src="assets/images/p-2.jpg" alt="" className="img-fluid mr-4" />
-                                    <div className="media-body">
-                                        <h6>Hoodie with <br />Logo</h6>
-                                        <span className="price">$45</span>
-                                    </div>
-                                </a>
-
-                                <a className="popular-products-item media" href="/product-single">
-                                    <img src="assets/images/p-3.jpg" alt="" className="img-fluid mr-4" />
-                                    <div className="media-body">
-                                        <h6>Traveller<br />Backpack</h6>
-                                        <span className="price">$45</span>
-                                    </div>
-                                </a>
+                                {popular.map(p => {
+                                    return (
+                                        <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                            <p className="popular-products-item media">
+                                                <img src={p.image} alt="" className="img-fluid mr-4" />
+                                                <div className="media-body">
+                                                    <h6>{p.name}</h6>
+                                                    <span className="price">{p.wholesale_price}</span>
+                                                </div>
+                                            </p>
+                                        </Link>
+                                    )
+                                })}
                             </section>
                         </div>
                     </div>

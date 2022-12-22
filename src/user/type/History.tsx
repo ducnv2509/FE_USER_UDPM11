@@ -45,6 +45,8 @@ export interface IOrderReturn {
     status_return: number;
     total_price_return: number;
     total_quantity_return: number;
+    code: string;
+    codeInvoice: string;
     order_item: IOrderReturnItem[]
 
 }

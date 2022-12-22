@@ -1,35 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllProduct } from "../service/HomePage";
+import { getAllProduct, getSelling } from "../service/HomePage";
 import { IHomePage } from "../type/HomePage";
 import { Button, Pagination } from "antd";
 
 function Home() {
     const config = { style: 'currency', currency: 'VND', maximumFractionDigits: 9 }
     const [products, setProducts] = useState([{} as IHomePage]);
-    const [page, setPage] = useState({ fist: 0, last: 10 });
+    const [selling, setSelling] = useState([{} as IHomePage]);
+    const [page, setPage] = useState({ fist: 0, last: 4 });
     useEffect(() => {
         document.title = "Home Page"
         getAllProduct().then((r) => {
             setProducts(r.data);
-            console.log(r.data.reverse());
         });
+        getSelling().then(res => {
+            setSelling(res.data)
+        })
     }, []);
     const handleChange = (value: any) => {
         if (value <= 1) {
             setPage({
                 fist: 0,
-                last: 9
+                last: 4
             });
-        } else if (value * 10 > products.length) {
+        } else if (value * 4 > products.length) {
             setPage({
-                fist: (value * 10) - 10,
+                fist: (value * 4) - 4,
                 last: products.length
             });
         } else {
             setPage({
-                fist: (value * 10) - 10,
-                last: value * 10
+                fist: (value * 4) - 4,
+                last: value * 4
             });
         }
     };
@@ -96,7 +99,7 @@ function Home() {
                         <div className="col-lg-8">
                             <div className="title text-center">
                                 <h2>Điểm đến mới</h2>
-                                <p>Bán hàng trực tuyến tốt nhất để mua sắm vào cuối tuần này</p>
+                                <p>Bán hàng trực tuyến tốt nhất để mua sắm vào cuối tuần</p>
                             </div>
                         </div>
                     </div>
@@ -138,9 +141,10 @@ function Home() {
                                 })}
                             <Pagination
                                 defaultCurrent={1}
-                                defaultPageSize={10}
+                                defaultPageSize={4}
                                 onChange={handleChange}
                                 total={products.length}
+                                style={{ margin: "auto" }}
                             />
                         </>
                     </div>
@@ -175,51 +179,28 @@ function Home() {
                         <div className="col-lg-4 col-sm-6 col-md-6">
                             <div className="widget-featured-entries mt-5 mt-lg-0">
                                 <h4 className="mb-4 pb-3">Bán chạy nhất</h4>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="/product-single">
-                                        <img src="assets/images/p-1.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Keds - Kickstart Pom Pom</a></h6>
-                                        <p className="featured-entry-meta">$42.99</p>
-                                    </div>
-                                </div>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-2.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Nike - Brasilia Medium Backpack</a></h6>
-                                        <p className="featured-entry-meta">$27.99</p>
-                                    </div>
-                                </div>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-3.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Guess - GU7295</a></h6>
-                                        <p>$38.00</p>
-                                    </div>
-                                </div>
-                                <div className="media mb-3">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-4.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Adidas Originals Cap</a></h6>
-                                        <p className="featured-entry-meta">$35.00</p>
-                                    </div>
-                                </div>
-                                <div className="media">
-                                    <a className="featured-entry-thumb" href="!#">
-                                        <img src="assets/images/p-5.jpg" alt="Product thumb" width="64" className="img-fluid mr-3" />
-                                    </a>
-                                    <div className="media-body">
-                                        <h6 className="featured-entry-title mb-0"><a href="!#">Big Star Flip Tops</a></h6>
-                                        <p className="featured-entry-meta">$10.60</p>
-                                    </div>
-                                </div>
+
+                                {selling.map(p => {
+                                    return (
+                                        <div className="media mb-3">
+                                            <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                <img src={p.image} alt="Product thumb" width="64" className="img-fluid mr-3" />
+                                            </Link>
+                                            <div className="media-body">
+                                                <h6 className="featured-entry-title mb-0">
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        {p.name}
+                                                    </Link>
+                                                </h6>
+                                                <p className="featured-entry-meta">
+                                                    {Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+
+                                })}
+
                             </div>
                         </div>
                         <div className="col-lg-4 col-sm-6 col-md-6">
@@ -232,8 +213,12 @@ function Home() {
                                                 <img src={p.image} alt="Product thumb" width="64" className="img-fluid mr-3" />
                                             </Link>
                                             <div className="media-body">
-                                                <h6 className="featured-entry-title mb-0"><a href="!#">{p.name}</a></h6>
-                                                <p className="featured-entry-meta">{p.wholesale_price}</p>
+                                                <h6 className="featured-entry-title mb-0">
+                                                    <Link to={{ pathname: `/single-product/${p.id}` }}>
+                                                        {p.name}
+                                                    </Link>
+                                                </h6>
+                                                <p className="featured-entry-meta">{Intl.NumberFormat('vi-VN', config).format(p.wholesale_price)}</p>
                                             </div>
                                         </div>
                                     )
@@ -252,8 +237,8 @@ function Home() {
                             <div className="feature-block">
                                 <i className="tf-ion-android-bicycle"></i>
                                 <div className="content">
-                                    <h5>Miễn phí vận chuyển</h5>
-                                    <p>Trên tất cả các đơn đặt hàng $39.00</p>
+                                    <h5>Vận chuyển nhanh với GHN</h5>
+                                    <p>Ship hàng trên toàn quốc</p>
                                 </div>
                             </div>
                         </div>
@@ -261,8 +246,8 @@ function Home() {
                             <div className="feature-block">
                                 <i className="tf-wallet"></i>
                                 <div className="content">
-                                    <h5>30 ngày trở lại</h5>
-                                    <p>Đảm bảo lại tiền</p>
+                                    <h5>Trả hàng</h5>
+                                    <p>Trong vòng 3 ngày từ khi nhận được hàng</p>
                                 </div>
                             </div>
                         </div>
@@ -271,7 +256,7 @@ function Home() {
                                 <i className="tf-key"></i>
                                 <div className="content">
                                     <h5>Kiểm tra an toàn</h5>
-                                    <p>100% được bảo vệ bởi paypal</p>
+                                    <p>Thanh toán an toàn với OnePay</p>
                                 </div>
                             </div>
                         </div>

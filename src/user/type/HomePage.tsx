@@ -25,6 +25,7 @@ export interface IInfo {
     option2:string;
     option3:string;
     wholesale_price:number
+    code: string
 }
 
 // export interface IOption1 
