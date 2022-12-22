@@ -64,7 +64,7 @@ function SignUp() {
                                 <form onSubmit={handleSubmit(handleFormSubmit)}>
                                     <div className="form-group mb-4">
                                         <label htmlFor="#">Nhập Email</label>
-                                        <input type="text" className="form-control" placeholder="Email..."
+                                        <input type="email" className="form-control" placeholder="Email..."
                                             {...register('email')} required
                                         />
                                     </div>
