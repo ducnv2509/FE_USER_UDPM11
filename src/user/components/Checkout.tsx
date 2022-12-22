@@ -39,6 +39,7 @@ function Checkout() {
     const [nameTP, setNameTP] = useState('');
     const [nameHy, setNameHy] = useState('');
     const [nameXa, setNameXa] = useState('');
+    const [gram, setGram] = useState(0);
     const [detailsAdress, setDetailsAdress] = useState('');
 
 
@@ -52,13 +53,21 @@ function Checkout() {
     });
 
 
-    console.log('-------------s--', id_cart_it_main);
-
     useEffect(() => {
         setCartItems(JSON.parse(localStorage.getItem('listItem') || "[]"))
         getInfoTP().then((response) => {
             setListTP(response.data.infomation)
         })
+        let totalGram = 0;
+        console.log('-------------s--', id_cart_it_main);
+        JSON.parse(localStorage.getItem('listItem') || "[]").map((e: any) => {
+            return totalGram += e.sale_price * e.quantity
+        })
+        console.log(JSON.parse(localStorage.getItem('listItem') || "[]"));
+
+        setGram(totalGram)
+        console.log('GRAM', totalGram);
+
     }, [])
 
     useEffect(() => {
@@ -94,7 +103,7 @@ function Checkout() {
 
 
     useEffect(() => {
-        moneyFee(totalPrice, Number(hy), xa, totalQuantity * 300).then((res) => {
+        moneyFee(totalPrice, Number(hy), xa, gram).then((res) => {
             console.log('response fee' + res.data.infomation[0])
             setMoneyFeeShip(res.data.infomation[0])
         })

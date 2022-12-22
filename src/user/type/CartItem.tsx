@@ -10,4 +10,5 @@ export interface ICartItem {
     option1:string;
     option2:string;
     option3:string;
+    sale_price: number
 }
